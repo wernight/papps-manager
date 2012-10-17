@@ -1,12 +1,8 @@
 # Visual Studio files
 /*.suo
-/*.user
+*.csproj.user
 obj/
 bin/
-
-# NuGet
-/packages/*
-!/packages/repositories.config
 
 # ReSharper
 _ReSharper.*/
