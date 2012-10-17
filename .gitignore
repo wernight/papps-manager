@@ -1,8 +1,16 @@
 # Visual Studio files
-*.suo
+/*.suo
+/*.user
 obj/
 bin/
+
+# NuGet
+/packages/*
+!/packages/repositories.config
 
 # ReSharper
 _ReSharper.*/
 
+# NCrunch
+*.ncrunchsolution
+*.ncrunchsolution.user
