@@ -1,6 +1,6 @@
 # Visual Studio files
 /*.suo
-*.csproj.user
+*.user
 obj/
 bin/
 
@@ -8,5 +8,7 @@ bin/
 _ReSharper.*/
 
 # NCrunch
-*.ncrunchsolution
-*.ncrunchsolution.user
+/*.ncrunchsolution
+/*.ncrunchsolution.user
+/_NCrunch_*
+*.ncrunchproject

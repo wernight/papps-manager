@@ -1,0 +1,21 @@
+﻿<Window x:Class="PAppsManager.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tb="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
+        xmlns:cal="http://www.caliburnproject.org" Title="MainWindowView" Height="350" Width="525">
+    <Grid>
+        <tb:TaskbarIcon IconSource="/Resources/Icons/TrayIcon.ico" ToolTipText="PApps Manager">
+
+            <!-- Set a simple context menu  -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem cal:Message.Attach="Install" Header="Add a portable application" />
+                    <MenuItem cal:Message.Attach="Uninstall" Header="Remove a portable application" />
+                    <Separator />
+                    <MenuItem cal:Message.Attach="Exit" Header="Exit" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+
+        </tb:TaskbarIcon>
+    </Grid>
+</Window>
