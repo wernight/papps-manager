@@ -47,6 +47,7 @@ namespace PAppsManager.Core.PApps.Commands
             public ExecuteCommand Execute;
             public ExtractCommand Extract;
             public MoveCommand Move;
+            [JsonProperty(PropertyName = "7zip")] public SevenZipCommand SevenZip;
 
             public Command Command
             {
@@ -72,6 +73,7 @@ namespace PAppsManager.Core.PApps.Commands
                     yield return Execute;
                     yield return Extract;
                     yield return Move;
+                    yield return SevenZip;
                 }
             }
         }

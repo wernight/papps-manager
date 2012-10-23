@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PAppsManager.Core.PApps.Commands
@@ -15,6 +16,15 @@ namespace PAppsManager.Core.PApps.Commands
         }
 
         public string InstallTargerDirectory { get; set; }
+
+        protected static string ExeDirectory
+        {
+            get
+            {
+                string exeDirectory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+                return exeDirectory;
+            }
+        }
 
         /// <summary>
         /// Verified that all required info are provided and look valid.

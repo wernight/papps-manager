@@ -39,15 +39,6 @@ namespace PAppsManager.Core.PApps.Commands
             }
         }
 
-        private static string ExeDirectory
-        {
-            get
-            {
-                string exeDirectory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-                return exeDirectory;
-            }
-        }
-
         public override string ToString()
         {
             return string.Format("Extract {0}", FileName);

@@ -25,11 +25,13 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override void Execute()
         {
-            using (Process process = Process.Start(FileName, Arguments))
-            {
-                if (process == null)
-                    throw new CommandException("Failed to start a new process.");
+            var psi = new ProcessStartInfo(FileName, Arguments)
+                {
+                    WorkingDirectory = InstallTargerDirectory,
+                };
 
+            using (Process process = Process.Start(psi))
+            {
                 process.WaitForExit();
                 if (FailOnError && process.ExitCode != 0)
                     throw new CommandException(string.Format("External program {0} returned exit code {1}", FileName,
