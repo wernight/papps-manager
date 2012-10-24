@@ -25,9 +25,19 @@ namespace PAppsManager.Core.PApps
         {
             if (_applications.Contains(application))
                 throw new Exception("Portable application already installed: " + application);
-            application.InstallCommands.Validate();
-            application.InstallCommands.Execute();
-            _applications.Add(application);
+
+            try
+            {
+                application.InstallCommands.Validate();
+                application.InstallCommands.Execute();
+                _applications.Add(application);
+                application.InstallCommands.CleanUp(true);
+            }
+            catch
+            {
+                application.InstallCommands.CleanUp(false);
+                throw;
+            }
         }
     }
 }

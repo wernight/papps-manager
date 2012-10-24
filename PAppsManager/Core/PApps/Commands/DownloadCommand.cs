@@ -12,11 +12,30 @@ namespace PAppsManager.Core.PApps.Commands
     /// </summary>
     public class DownloadCommand : Command
     {
+        /// <summary>
+        /// URL to download.
+        /// </summary>
         public string Url { get; set; }
 
+        /// <summary>
+        /// Local output file name (relative to installation directory).
+        /// </summary>
         public string FileName { get; set; }
 
+        /// <summary>
+        /// Check MD5 or SHA-1 hash when provided.
+        /// </summary>
         public string Hash { get; set; }
+
+        /// <summary>
+        /// Keep the file even after the installation is over.
+        /// </summary>
+        public bool Permanent { get; set; }
+
+        private string TargetFilePath
+        {
+            get { return Path.Combine(InstallTargerDirectory, FileName); }
+        }
 
         #region Command Members
 
@@ -48,14 +67,20 @@ namespace PAppsManager.Core.PApps.Commands
         {
             using (var webClient = new WebClient())
             {
-                string targetFilePath = Path.Combine(InstallTargerDirectory, FileName);
-                webClient.DownloadFile(Url, targetFilePath);
+                webClient.DownloadFile(Url, TargetFilePath);
 
                 Func<Stream, bool> hashValid = GetHashValidatorFor(Hash);
-                using (var stream = new FileStream(targetFilePath, FileMode.Open))
+                using (var stream = new FileStream(TargetFilePath, FileMode.Open))
                     if (!hashValid(stream))
                         throw new CommandException("The downloaded file hash doesn't match the expected hash. Please check your firewall and anti-virus rules and try again later.");
             }
+        }
+
+        public override void CleanUp(bool successful)
+        {
+            if (!Permanent && !successful && File.Exists(TargetFilePath))
+                File.Delete(TargetFilePath);
+            base.CleanUp(successful);
         }
 
         #endregion

@@ -39,6 +39,14 @@ namespace PAppsManager.Core.PApps.Commands
         public abstract void Execute();
 
         /// <summary>
+        /// Post-installation operation.
+        /// </summary>
+        /// <param name="successful">True if the installation was successful.</param>
+        public virtual void CleanUp(bool successful)
+        {
+        }
+
+        /// <summary>
         /// Check that a string is a valid file name.
         /// </summary>
         /// <param name="fileName"></param>

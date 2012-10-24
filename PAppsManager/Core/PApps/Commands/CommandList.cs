@@ -27,6 +27,15 @@ namespace PAppsManager.Core.PApps.Commands
             }
         }
 
+        public override void CleanUp(bool successful)
+        {
+            foreach (Command action in Commands)
+            {
+                action.CleanUp(successful);
+            }
+            base.CleanUp(successful);
+        }
+
         public override string ToString()
         {
             return string.Format("{0} Install Commands", Commands.Count);
