@@ -12,3 +12,7 @@ _ReSharper.*/
 /*.ncrunchsolution.user
 /_NCrunch_*
 *.ncrunchproject
+
+# NSIS generated files
+/*.exe
+/PortableDriveRoot/*.exe
