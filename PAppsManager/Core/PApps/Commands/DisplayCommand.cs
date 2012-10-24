@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 
 namespace PAppsManager.Core.PApps.Commands
@@ -17,7 +18,7 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
             MessageBox.Show(Message);
         }

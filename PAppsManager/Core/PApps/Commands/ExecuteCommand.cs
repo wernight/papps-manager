@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
@@ -9,10 +11,12 @@ namespace PAppsManager.Core.PApps.Commands
             FailOnError = true;
         }
 
+        [JsonProperty("file")]
         public string FileName { get; set; }
 
         public string Arguments { get; set; }
 
+        [JsonProperty("fail_on_error")]
         public bool FailOnError { get; set; }
 
         public override string Validate()
@@ -23,11 +27,11 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
             var psi = new ProcessStartInfo(FileName, Arguments)
                 {
-                    WorkingDirectory = InstallTargerDirectory,
+                    WorkingDirectory = targetDirectory.FullName,
                 };
 
             using (Process process = Process.Start(psi))

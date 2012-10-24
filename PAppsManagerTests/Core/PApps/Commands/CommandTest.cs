@@ -6,7 +6,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
     [TestFixture]
     public class CommandTest : AssertionHelper
     {
-        [TestCase("Foo/**/?*.exe", Result = @"Foo/.*/[^\\/][^\\/]*\.exe")]
+        [TestCase("Foo/**/?*.exe", Result = @"Foo\\.*\\[^\\/][^\\/]*\.exe")]
         [TestCase("*****?***", Result = @".*[^\\/].*")]
         public string WildcardToRegex(string wildcard)
         {

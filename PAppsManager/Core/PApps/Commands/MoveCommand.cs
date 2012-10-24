@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
@@ -10,7 +12,8 @@ namespace PAppsManager.Core.PApps.Commands
     {
         public MoveCommand()
         {
-            BaseDirectory = "";
+            FromDirectory = "";
+            IncludeFiles = "**";
             ToDirectory = "";
         }
 
@@ -19,16 +22,18 @@ namespace PAppsManager.Core.PApps.Commands
         /// 
         /// Empty by default.
         /// </summary>
-        public string BaseDirectory { get; set; }
+        [JsonProperty("from_directory")]
+        public string FromDirectory { get; set; }
 
         /// <summary>
-        /// Source files, relative to the <see cref="BaseDirectory"/>.
+        /// Source files, relative to the <see cref="FromDirectory"/>.
         /// 
         /// Supporting wildcards:
         ///   - '?' matches a single character, except path delimiters.
         ///   - '*' matches zero or more characters, except path delimiters.
         ///   - '**' matches zero or more characters, including path delimiters.
         /// </summary>
+        [JsonProperty("include_files")]
         public string IncludeFiles { get; set; }
         
         /// <summary>
@@ -36,23 +41,41 @@ namespace PAppsManager.Core.PApps.Commands
         /// 
         /// Empty by default.
         /// </summary>
+        [JsonProperty("to_directory")]
         public string ToDirectory { get; set; }
 
         public override string Validate()
         {
-            return ValidateFileName(BaseDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateFileName(ToDirectory, true);
+            return ValidateFileName(FromDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateFileName(ToDirectory, true);
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
+            if (FromDirectory == ToDirectory)
+                return;
+
+            var possiblyEmptyDirectories = new HashSet<DirectoryInfo>();
+
             var regex = new Regex(WildcardToRegex(IncludeFiles));
 
-            var baseDirectory = Path.Combine(InstallTargerDirectory, BaseDirectory);
-            foreach (string file in Directory.EnumerateFiles(baseDirectory, "*", SearchOption.AllDirectories))
+            var baseDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, FromDirectory));
+            foreach (FileInfo file in baseDirectory.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                string relativeFile = file.Substring(baseDirectory.Length);
+                string relativeFile = file.FullName.Substring(baseDirectory.FullName.Length);
                 if (regex.IsMatch(relativeFile))
-                    File.Move(file, Path.Combine(ToDirectory, relativeFile));
+                {
+                    file.MoveTo(Path.Combine(ToDirectory, relativeFile));
+
+                    DirectoryInfo directoryInfo = file.Directory;
+                    if (directoryInfo != null)
+                        possiblyEmptyDirectories.Add(directoryInfo);
+                }
+            }
+
+            // Recursively delete emptied directories below the target directory.
+            foreach (DirectoryInfo directoryInfo in possiblyEmptyDirectories)
+            {
+                DeleteIfEmpty(targetDirectory, directoryInfo);
             }
         }
     }

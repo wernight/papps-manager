@@ -1,5 +1,5 @@
 Name "PApps Manager Launcher"
-OutFile "PAppsManager.exe"
+OutFile "Start.exe"
 Icon "..\PAppsManager\Resources\Icons\TrayIcon.ico"
 
 WindowIcon Off ; show no icon of the launcher

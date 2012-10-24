@@ -15,13 +15,13 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
             var sevenZipExe = Path.Combine(ExeDirectory, @"7-Zip\x86\7z.exe");
 
             var psi = new ProcessStartInfo(sevenZipExe, Arguments)
                 {
-                    WorkingDirectory = InstallTargerDirectory,
+                    WorkingDirectory = targetDirectory.FullName,
                 };
 
             using (Process process = Process.Start(psi))

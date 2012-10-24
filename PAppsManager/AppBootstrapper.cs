@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.ServiceModel;
 using System.Windows;
 using Autofac;
 using Caliburn.Micro;
@@ -12,28 +11,14 @@ using PAppsManager.ViewModels;
 
 namespace PAppsManager
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class AppBootstrapper : AutofacBootstrapper<MainWindowViewModel>, ISingleInstanceApp
+    internal class AppBootstrapper : AutofacBootstrapper<MainWindowViewModel>
     {
-        private SingleInstance<ISingleInstanceApp> _singleInstance;
+        private SingleInstance _singleInstance;
 
         private static string ProductName
         {
             get { return Assembly.GetExecutingAssembly().GetName().Name; }
         }
-
-        #region ISingleInstanceApp Members
-
-        /// <summary>
-        /// Call by other instances like when the URL Protocol is used.
-        /// </summary>
-        /// <param name="args">Command line arguments passed to the other instance of this application.</param>
-        public void SignalExternalCommandLineArgs(string[] args)
-        {
-            ProcessCommandLineArguments(args);
-        }
-
-        #endregion
 
         /// <summary>
         /// Override to include your own Autofac configuration after the framework has finished its configuration, but 
@@ -47,16 +32,20 @@ namespace PAppsManager
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            _singleInstance = new SingleInstance<ISingleInstanceApp>(this, ProductName);
-
+            _singleInstance = new SingleInstance(ProductName, otherInstanceArgs => Execute.OnUIThread(() => ProcessCommandLineArguments(otherInstanceArgs)));
+            
             // Process the command line.
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
             {
                 if (_singleInstance.IsAlreadyRunning)
-                    _singleInstance.AlreadyRunningApplication.SignalExternalCommandLineArgs(args);
-                else
-                    ProcessCommandLineArguments(args);
+                {
+                    _singleInstance.SignalExternalCommandLineArgs(args);
+                    Application.Shutdown();
+                    return;
+                }
+                
+                ProcessCommandLineArguments(args);
             }
 
             // Single instance of the applicaiton allowed.
@@ -72,7 +61,7 @@ namespace PAppsManager
 
             // Associate the papps:// URL protocol handler.
             string exePath = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
-            UrlProtocol.Associate("papps", exePath);
+            UrlProtocol.Associate("papp", exePath);
 
             base.OnStartup(sender, e);
         }
@@ -83,13 +72,13 @@ namespace PAppsManager
                 throw new ArgumentException("Invalid command line arguments.");
             string url = args[1];
 
-            IoC.Get<PortableApplicationManager>().Install(PortableApplication.LoadFromUrl(url));
+            IoC.Get<MainWindowViewModel>().InstallApplication(url);
         }
 
         protected override void OnExit(object sender, EventArgs e)
         {
             // Remove the papps:// URL protocol handler.
-            UrlProtocol.Disassociate("papps");
+            UrlProtocol.Disassociate("papp");
 
             // Allow opening another instance of this application.
             _singleInstance.Dispose();

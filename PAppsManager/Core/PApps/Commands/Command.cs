@@ -1,47 +1,27 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace PAppsManager.Core.PApps.Commands
 {
     /// <summary>
     /// Portable application installation action.
     /// </summary>
-    public abstract class Command
+    public abstract class Command : ICommand
     {
-        protected Command()
-        {
-            InstallTargerDirectory = "";
-        }
-
-        public string InstallTargerDirectory { get; set; }
-
         protected static string ExeDirectory
         {
-            get
-            {
-                string exeDirectory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-                return exeDirectory;
-            }
+            get { return Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath); }
         }
 
-        /// <summary>
-        /// Verified that all required info are provided and look valid.
-        /// Do security checks here.
-        /// </summary>
-        /// <returns>Null if all is fine, or a message if it failed validation.</returns>
         public abstract string Validate();
 
-        /// <summary>
-        /// Perform the action.
-        /// </summary>
-        public abstract void Execute();
+        public abstract void Execute(DirectoryInfo targetDirectory);
 
-        /// <summary>
-        /// Post-installation operation.
-        /// </summary>
-        /// <param name="successful">True if the installation was successful.</param>
         public virtual void CleanUp(bool successful)
         {
         }
@@ -56,9 +36,9 @@ namespace PAppsManager.Core.PApps.Commands
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                if (!allowEmpty)
-                    return "File name not provided";
-                return null;
+                if (allowEmpty && fileName != null)
+                    return null;
+                return "File name not provided";
             }
 
             if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
@@ -83,12 +63,33 @@ namespace PAppsManager.Core.PApps.Commands
 
         internal protected static string WildcardToRegex(string wildcard)
         {
+            wildcard = wildcard.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             wildcard = Regex.Replace(wildcard, @"\*{3,}", "**");
             wildcard = Regex.Escape(wildcard);
             wildcard = wildcard.Replace(Regex.Escape("**"), ".*");
-            wildcard = wildcard.Replace(Regex.Escape("*"), "[^" + Regex.Escape("" + Path.DirectorySeparatorChar + Path.AltDirectorySeparatorChar) + "]*");
-            wildcard = wildcard.Replace(Regex.Escape("?"), "[^" + Regex.Escape("" + Path.DirectorySeparatorChar + Path.AltDirectorySeparatorChar) + "]");
+            wildcard = wildcard.Replace(Regex.Escape("*"), "[^" + Regex.Escape(string.Concat(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)) + "]*");
+            wildcard = wildcard.Replace(Regex.Escape("?"), "[^" + Regex.Escape(string.Concat(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)) + "]");
             return wildcard;
+        }
+
+        /// <summary>
+        /// Recursively delete empty directories below the base directory.
+        /// </summary>
+        /// <param name="baseDirectory"></param>
+        /// <param name="directory"></param>
+        protected static void DeleteIfEmpty([NotNull] DirectoryInfo baseDirectory, [CanBeNull] DirectoryInfo directory)
+        {
+            Debug.Assert(directory == null || directory.FullName.StartsWith(baseDirectory.FullName));
+
+            string baseDirectoryFullName = baseDirectory.FullName + Path.DirectorySeparatorChar;
+
+            while (directory != null && directory.FullName.StartsWith(baseDirectoryFullName) &&
+                   !directory.GetDirectories().Any() && !directory.GetFiles().Any())
+            {
+                // Delete empty directories.
+                directory.Delete();
+                directory = directory.Parent;
+            }
         }
     }
 }

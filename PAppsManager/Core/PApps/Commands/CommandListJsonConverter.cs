@@ -40,6 +40,7 @@ namespace PAppsManager.Core.PApps.Commands
         [UsedImplicitly]
         private class JsonAction
         {
+#pragma warning disable 649
             public DeleteCommand Delete;
             public DisplayCommand Display;
             public DownloadCommand Download;
@@ -48,6 +49,7 @@ namespace PAppsManager.Core.PApps.Commands
             public ExtractCommand Extract;
             public MoveCommand Move;
             [JsonProperty(PropertyName = "7zip")] public SevenZipCommand SevenZip;
+#pragma warning restore 649
 
             public Command Command
             {

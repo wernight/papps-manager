@@ -55,11 +55,12 @@ namespace PAppsManager.Core
                 var classesKey = Registry.CurrentUser.OpenSubKey(@"Software\Classes", true);
                 if (classesKey == null)
                     throw new Exception("Failed to open user registry key.");
-                classesKey.DeleteSubKeyTree(protocol);
+                if (classesKey.OpenSubKey(protocol) != null)
+                    classesKey.DeleteSubKeyTree(protocol);
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Failed to de-associate the {1} URL protocol.", protocol));
+                throw new Exception(string.Format("Failed to de-associate the {0} URL protocol: {1}", protocol, e.Message));
             }
         } 
     }

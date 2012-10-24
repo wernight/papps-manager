@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
@@ -12,6 +13,8 @@ namespace PAppsManager.Core.PApps.Commands
     /// </summary>
     public class DownloadCommand : Command
     {
+        private string _outputFilePath;
+
         /// <summary>
         /// URL to download.
         /// </summary>
@@ -20,7 +23,8 @@ namespace PAppsManager.Core.PApps.Commands
         /// <summary>
         /// Local output file name (relative to installation directory).
         /// </summary>
-        public string FileName { get; set; }
+        [JsonProperty("destination_file")]
+        public string DestinationFileName { get; set; }
 
         /// <summary>
         /// Check MD5 or SHA-1 hash when provided.
@@ -32,17 +36,12 @@ namespace PAppsManager.Core.PApps.Commands
         /// </summary>
         public bool Permanent { get; set; }
 
-        private string TargetFilePath
-        {
-            get { return Path.Combine(InstallTargerDirectory, FileName); }
-        }
-
         #region Command Members
 
         public override string Validate()
         {
             // Validate the FileName
-            var valid = ValidateFileName(FileName);
+            var valid = ValidateFileName(DestinationFileName);
             if (valid != null)
                 return valid;
 
@@ -63,14 +62,22 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
             using (var webClient = new WebClient())
             {
-                webClient.DownloadFile(Url, TargetFilePath);
+                _outputFilePath = Path.Combine(targetDirectory.FullName, DestinationFileName);
+                try
+                {
+                    webClient.DownloadFile(Url, _outputFilePath);
+                }
+                catch (WebException e)
+                {
+                    throw new CommandException("Failed to download " + Url + Environment.NewLine + e.Message, e);
+                }
 
                 Func<Stream, bool> hashValid = GetHashValidatorFor(Hash);
-                using (var stream = new FileStream(TargetFilePath, FileMode.Open))
+                using (var stream = new FileStream(_outputFilePath, FileMode.Open))
                     if (!hashValid(stream))
                         throw new CommandException("The downloaded file hash doesn't match the expected hash. Please check your firewall and anti-virus rules and try again later.");
             }
@@ -78,8 +85,8 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override void CleanUp(bool successful)
         {
-            if (!Permanent && !successful && File.Exists(TargetFilePath))
-                File.Delete(TargetFilePath);
+            if ((!Permanent || !successful) && _outputFilePath != null && File.Exists(_outputFilePath))
+                File.Delete(_outputFilePath);
             base.CleanUp(successful);
         }
 
@@ -87,7 +94,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string ToString()
         {
-            return string.Format("Download {0} as {1}", Url, FileName);
+            return string.Format("Download {0} as {1}", Url, DestinationFileName);
         }
 
         private Func<Stream, bool> GetHashValidatorFor(string hash)

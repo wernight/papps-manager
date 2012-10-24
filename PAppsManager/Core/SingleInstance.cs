@@ -16,8 +16,7 @@ namespace PAppsManager.Core
     ///     }
     ///     </code>
     /// </summary>
-    /// <typeparam name="TCommunicationInterface"></typeparam>
-    internal class SingleInstance<TCommunicationInterface> : IDisposable
+    internal class SingleInstance : IDisposable
     {
         /// <summary>
         /// Note: Also used to avoid the mutex to be garbage collected.
@@ -26,7 +25,12 @@ namespace PAppsManager.Core
 
         private ServiceHost _serviceHost;
 
-        public SingleInstance(TCommunicationInterface singleInstance, string uniqueApplicationName)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="uniqueApplicationName"></param>
+        /// <param name="callback">Call by other instances with the command line arguments passed to them.</param>
+        public SingleInstance(string uniqueApplicationName, Action<string[]> callback)
         {
             // Single instance of the applicaiton allowed.
             bool createdNew;
@@ -34,14 +38,29 @@ namespace PAppsManager.Core
             IsAlreadyRunning = !createdNew;
 
             if (!IsAlreadyRunning)
-                StartServer(singleInstance);
-            else
-                AlreadyRunningApplication = CreateClient();
+                StartServer(callback);
         }
 
         public bool IsAlreadyRunning { get; private set; }
 
-        public TCommunicationInterface AlreadyRunningApplication { get; private set; }
+        public void SignalExternalCommandLineArgs(string[] args)
+        {
+            var client = CreateClient();
+            try
+            {
+                client.SignalExternalCommandLineArgs(args);
+            }
+            finally
+            {
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable HeuristicUnreachableCode
+                var communicationObject = client as ICommunicationObject;
+                if (communicationObject != null)
+                    communicationObject.Close();
+                // ReSharper restore HeuristicUnreachableCode
+                // ReSharper restore ConditionIsAlwaysTrueOrFalse
+            }
+        }
 
         #region IDisposable Members
 
@@ -50,34 +69,26 @@ namespace PAppsManager.Core
             if (_serviceHost != null)
                 _serviceHost.Close();
 
-// ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable HeuristicUnreachableCode
-            var communicationObject = AlreadyRunningApplication as ICommunicationObject;
-            if (communicationObject != null)
-                communicationObject.Close();
-// ReSharper restore HeuristicUnreachableCode
-// ReSharper restore ConditionIsAlwaysTrueOrFalse
-
             if (_mutex != null)
                 _mutex.Dispose();
         }
 
         #endregion
 
-        private void StartServer(TCommunicationInterface singleInstance)
+        private void StartServer(Action<string[]> callback)
         {
             // Run server
-            _serviceHost = new ServiceHost(singleInstance);
-            _serviceHost.AddServiceEndpoint(typeof (TCommunicationInterface),
+            _serviceHost = new ServiceHost(new SingleInstanceApp(callback));
+            _serviceHost.AddServiceEndpoint(typeof (ISingleInstanceApp),
                                             new NetNamedPipeBinding(),
                                             "net.pipe://localhost");
             _serviceHost.Open();
         }
 
-        private TCommunicationInterface CreateClient()
+        private ISingleInstanceApp CreateClient()
         {
             // Run client
-            var tcpFactory = new ChannelFactory<TCommunicationInterface>(new NetNamedPipeBinding(),
+            var tcpFactory = new ChannelFactory<ISingleInstanceApp>(new NetNamedPipeBinding(),
                                                                          "net.pipe://localhost");
             return tcpFactory.CreateChannel();
         }

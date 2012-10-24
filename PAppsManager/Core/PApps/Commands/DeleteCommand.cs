@@ -1,5 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
@@ -13,6 +18,7 @@ namespace PAppsManager.Core.PApps.Commands
         ///   - '*' matches zero or more characters, except path delimiters.
         ///   - '**' matches zero or more characters, including path delimiters.
         /// </summary>
+        [JsonProperty("files")]
         public string IncludeFiles { get; set; }
 
         public override string Validate()
@@ -20,14 +26,28 @@ namespace PAppsManager.Core.PApps.Commands
             return ValidateRegex(WildcardToRegex(IncludeFiles));
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
+            var possiblyEmptyDirectories = new HashSet<DirectoryInfo>();
+
             var regex = new Regex(WildcardToRegex(IncludeFiles));
-            foreach (string file in Directory.EnumerateFiles(InstallTargerDirectory, "*", SearchOption.AllDirectories))
+            foreach (FileInfo file in targetDirectory.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                string relativeFile = file.Substring(InstallTargerDirectory.Length);
+                string relativeFile = file.FullName.Substring(targetDirectory.FullName.Length + 1);
                 if (regex.IsMatch(relativeFile))
-                    File.Delete(file);
+                {
+                    file.Delete();
+
+                    DirectoryInfo directoryInfo = file.Directory;
+                    if (directoryInfo != null)
+                        possiblyEmptyDirectories.Add(directoryInfo);
+                }
+            }
+
+            // Recursively delete emptied directories below the target directory.
+            foreach (DirectoryInfo directoryInfo in possiblyEmptyDirectories)
+            {
+                DeleteIfEmpty(targetDirectory, directoryInfo);
             }
         }
     }

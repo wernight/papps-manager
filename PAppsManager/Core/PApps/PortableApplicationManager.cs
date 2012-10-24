@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using JetBrains.Annotations;
 using PAppsManager.Properties;
 
 namespace PAppsManager.Core.PApps
@@ -13,7 +17,13 @@ namespace PAppsManager.Core.PApps
         /// </summary>
         public string BaseDirectory
         {
-            get { return Settings.Default.PortableApplicationsBaseDirectory; }
+            get
+            {
+                string exeDirectory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+                if (exeDirectory == null)
+                    throw new Exception("Unable to locate current executable.");
+                return Path.Combine(exeDirectory, Settings.Default.PortableApplicationsBaseDirectory);
+            }
         }
 
         public IEnumerable<PortableApplication> PortableApplications
@@ -28,8 +38,12 @@ namespace PAppsManager.Core.PApps
 
             try
             {
-                application.InstallCommands.Validate();
-                application.InstallCommands.Execute();
+                application.Validate();
+
+                // Perform the installation
+                var targetDirectory = Directory.CreateDirectory(Path.Combine(BaseDirectory, SafeFileName(application.Name)));
+                application.InstallCommands.Execute(targetDirectory);
+
                 _applications.Add(application);
                 application.InstallCommands.CleanUp(true);
             }
@@ -38,6 +52,16 @@ namespace PAppsManager.Core.PApps
                 application.InstallCommands.CleanUp(false);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Strip down any invalid character.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private string SafeFileName([NotNull] string name)
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(name, (current, ch) => current.Replace(ch, '_'));
         }
     }
 }

@@ -1,44 +1,46 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
     [JsonConverter(typeof(CommandListJsonConverter))]
-    internal class CommandList : Command
+    internal class CommandList : List<ICommand>, ICommand
     {
-        public CommandList(IEnumerable<Command> actions = null)
+        public CommandList()
         {
-            Commands = actions != null ? new List<Command>(actions) : new List<Command>();
         }
 
-        public List<Command> Commands { get; private set; }
-
-        public override string Validate()
+        public CommandList(IEnumerable<ICommand> commands)
+            : base(commands)
         {
-            return Commands.Select(action => action.Validate()).FirstOrDefault(validate => validate != null);
         }
 
-        public override void Execute()
+        public virtual string Validate()
         {
-            foreach (Command action in Commands)
+            return this.Select(action => action.Validate()).FirstOrDefault(validate => validate != null);
+        }
+
+        public virtual void Execute(DirectoryInfo targetDirectory)
+        {
+            foreach (ICommand action in this)
             {
-                action.Execute();
+                action.Execute(targetDirectory);
             }
         }
 
-        public override void CleanUp(bool successful)
+        public virtual void CleanUp(bool successful)
         {
-            foreach (Command action in Commands)
+            foreach (ICommand action in this)
             {
                 action.CleanUp(successful);
             }
-            base.CleanUp(successful);
         }
 
         public override string ToString()
         {
-            return string.Format("{0} Install Commands", Commands.Count);
+            return string.Format("{0} Install Commands", Count);
         }
     }
 }

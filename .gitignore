@@ -14,5 +14,5 @@ _ReSharper.*/
 *.ncrunchproject
 
 # NSIS generated files
-/*.exe
-/PortableDriveRoot/*.exe
+/PAppsManager-Setup.exe
+/PortableDriveRoot/Start.exe

@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using PAppsManager.Core.PApps.Commands;
 
@@ -15,6 +16,9 @@ namespace PAppsManager.Core.PApps
 
                 var application = JsonConvert.DeserializeObject<PortableApplication>(json);
                 application.Url = url;
+
+                application.Validate();
+
                 return application;
             }
         }
@@ -22,29 +26,50 @@ namespace PAppsManager.Core.PApps
         /// <summary>
         /// Unique URL identifying this application.
         /// </summary>
-        public string Url { get; private set; }
+        [NotNull]
+        public string Url { get; set; }
 
         /// <summary>
         /// Program name.
         /// Should be identical if it's the same program (but not a must).
         /// </summary>
+        [NotNull]
         public string Name { get; set; }
 
         /// <summary>
         /// Human version to display. Could be anything.
         /// </summary>
+        [NotNull]
         public string Version { get; set; }
 
         /// <summary>
         /// Note: Used to detect upgrades.
         /// </summary>
+        [JsonProperty("release_date")]
         public DateTime ReleaseDate { get; set; }
 
         /// <summary>
         /// Operations to perform to retrieve and set up the portable application.
         /// This excludes any portabilization but only includes how to get the portable binaries.
         /// </summary>
+        [NotNull,JsonProperty("install_commands")]
         public CommandList InstallCommands { get; set; }
+
+        /// <summary>
+        /// Check all required fields are present.
+        /// </summary>
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+                throw new JsonException("Portable application name is not defined.");
+            if (string.IsNullOrWhiteSpace(Version))
+                throw new JsonException("Portable application version is not defined.");
+            if (ReleaseDate == DateTime.MinValue)
+                throw new JsonException("Portable application release date is not defined.");
+            if (InstallCommands == null || InstallCommands.Count == 0)
+                throw new JsonException("Portable application has no installation commands.");
+            InstallCommands.Validate();
+        }
 
         public override string ToString()
         {
@@ -55,7 +80,7 @@ namespace PAppsManager.Core.PApps
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((PortableApplication)obj);
         }
 

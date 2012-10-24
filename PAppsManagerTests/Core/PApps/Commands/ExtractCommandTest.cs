@@ -12,11 +12,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [TestCase("nsis.exe")]
         public void DecompressNsis(string filename)
         {
-            var extractAction = new ExtractCommand();
-
-            File.Copy(Path.Combine("Resources", filename), Path.Combine(extractAction.InstallTargerDirectory, filename), true);
-
-            new ExtractCommand{FileName = filename}.Execute();
+            new ExtractCommand{FileName = filename}.Execute(new DirectoryInfo("Resources"));
             // TODO: Expect to find "example.txt" decompressed.
         }
     }

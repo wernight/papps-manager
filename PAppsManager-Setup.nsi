@@ -1,4 +1,4 @@
-Name "PApps Manager Setup"
+Name "PApps Manager"
 OutFile "PAppsManager-Setup.exe"
 
 ; The default installation directory

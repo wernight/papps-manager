@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace PAppsManager.Core.PApps.Commands
 {
     /// <summary>
@@ -12,7 +14,7 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute()
+        public override void Execute(DirectoryInfo targetDirectory)
         {
             if (string.IsNullOrEmpty(Message))
                 throw new CommandException("Undefined error message.");
