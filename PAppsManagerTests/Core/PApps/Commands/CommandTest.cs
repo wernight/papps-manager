@@ -20,5 +20,17 @@ namespace PAppsManagerTests.Core.PApps.Commands
         {
             return Command.ValidateRegex(regex) == null;
         }
+
+        [TestCase(@" ", Result = false)]
+        [TestCase(@"Foo", Result = true)]
+        [TestCase(@"Foo/Bar\.file", Result = true)]
+        [TestCase(@"../Foo", Result = false)]
+        [TestCase(@"C:\Foo", Result = false)]
+        [TestCase(@"\\Foo", Result = false)]
+        [TestCase(@"/Foo", Result = false)]
+        public bool ValidateRelativePath(string path)
+        {
+            return Command.ValidateRelativePath(path) == null;
+        }
     }
 }

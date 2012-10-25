@@ -94,9 +94,9 @@
     <Compile Include="Core\PApps\Commands\SevenZipCommand.cs" />
     <Compile Include="Core\PApps\PortableApplication.cs" />
     <Compile Include="Core\PApps\PortableApplicationManager.cs" />
-    <Compile Include="Core\ISingleInstanceApp.cs" />
-    <Compile Include="Core\SingleInstance.cs" />
-    <Compile Include="Core\SingleInstanceApp.cs" />
+    <Compile Include="Core\SingleInstance\ISingleInstanceApp.cs" />
+    <Compile Include="Core\SingleInstance\SingleInstance.cs" />
+    <Compile Include="Core\SingleInstance\SingleInstanceApp.cs" />
     <Compile Include="Core\UrlProtocol.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\MainWindowView.xaml">

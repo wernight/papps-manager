@@ -29,20 +29,25 @@ namespace PAppsManager.Core.PApps.Commands
         /// <summary>
         /// Check that a string is a valid file name.
         /// </summary>
-        /// <param name="fileName"></param>
+        /// <param name="path"></param>
         /// <param name="allowEmpty">True to make it optional, allowing the filename to be null or empty.</param>
         /// <returns>Null if all is fine, or a message if it failed validation.</returns>
-        internal protected static string ValidateFileName(string fileName, bool allowEmpty = false)
+        internal protected static string ValidateRelativePath(string path, bool allowEmpty = false)
         {
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                if (allowEmpty && fileName != null)
-                    return null;
-                return "File name not provided";
-            }
+            if (path == null)
+                return "Path cannot be null.";
 
-            if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-                return "File name contain invalid characters.";
+            if (!allowEmpty && string.IsNullOrWhiteSpace(path))
+                return "Path cannot be empty.";
+
+            if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                return "Path contain invalid characters.";
+
+            if (Path.IsPathRooted(path))
+                return "Path should be relative and cannot be rooted.";
+
+            if (!Path.GetFullPath(Path.Combine(@"C:\app", path)).StartsWith(@"C:\app"))
+                return "Path must remain below the application installation folder.";
 
             return null;
         }

@@ -48,6 +48,7 @@
     <Compile Include="Core\PApps\Commands\DeleteCommandTest.cs" />
     <Compile Include="Core\PApps\Commands\ExtractCommandTest.cs" />
     <Compile Include="Core\PApps\CommandListTest.cs" />
+    <Compile Include="Core\PApps\Commands\MoveCommandTest.cs" />
     <Compile Include="Core\PApps\PortableApplicationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

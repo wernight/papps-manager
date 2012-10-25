@@ -26,12 +26,13 @@ namespace PAppsManager.Core.PApps.Commands
         public string FromDirectory { get; set; }
 
         /// <summary>
-        /// Source files, relative to the <see cref="FromDirectory"/>.
+        /// Expression defining files to move, relative to the <see cref="FromDirectory"/>.
+        /// All matching files will be from <see cref="ToDirectory"/>. By default, include all files recursively.
         /// 
         /// Supporting wildcards:
         ///   - '?' matches a single character, except path delimiters.
         ///   - '*' matches zero or more characters, except path delimiters.
-        ///   - '**' matches zero or more characters, including path delimiters.
+        ///   - '**' matches zero or more characters, including path delimiters (i.e., recursive).
         /// </summary>
         [JsonProperty("include_files")]
         public string IncludeFiles { get; set; }
@@ -46,25 +47,33 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            return ValidateFileName(FromDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateFileName(ToDirectory, true);
+            return ValidateRelativePath(FromDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateRelativePath(ToDirectory, true);
         }
 
         public override void Execute(DirectoryInfo targetDirectory)
         {
-            if (FromDirectory == ToDirectory)
+            var fromDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, FromDirectory));
+            var toDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, ToDirectory));
+
+            if (fromDirectory == toDirectory)
                 return;
+
+            // Create the target directory.
+            toDirectory.Create();
 
             var possiblyEmptyDirectories = new HashSet<DirectoryInfo>();
 
             var regex = new Regex(WildcardToRegex(IncludeFiles));
 
-            var baseDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, FromDirectory));
-            foreach (FileInfo file in baseDirectory.EnumerateFiles("*", SearchOption.AllDirectories))
+            foreach (FileInfo file in fromDirectory.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                string relativeFile = file.FullName.Substring(baseDirectory.FullName.Length);
-                if (regex.IsMatch(relativeFile))
+                string relativePath = file.FullName.Substring(fromDirectory.FullName.Length + 1);
+                if (regex.IsMatch(relativePath))
                 {
-                    file.MoveTo(Path.Combine(ToDirectory, relativeFile));
+                    var destFile = new FileInfo(Path.Combine(toDirectory.FullName, relativePath));
+                    if (destFile.Directory != null)
+                        destFile.Directory.Create();
+                    file.MoveTo(destFile.FullName);
 
                     DirectoryInfo directoryInfo = file.Directory;
                     if (directoryInfo != null)

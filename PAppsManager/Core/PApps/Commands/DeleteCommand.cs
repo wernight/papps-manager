@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands

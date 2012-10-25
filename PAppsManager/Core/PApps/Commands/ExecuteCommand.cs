@@ -21,10 +21,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            if (string.IsNullOrWhiteSpace(FileName))
-                return "FileName is not defined.";
-
-            return null;
+            return ValidateRelativePath(FileName);
         }
 
         public override void Execute(DirectoryInfo targetDirectory)

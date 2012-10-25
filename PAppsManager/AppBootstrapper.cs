@@ -6,6 +6,7 @@ using Caliburn.Micro;
 using Caliburn.Micro.Autofac;
 using PAppsManager.Core;
 using PAppsManager.Core.PApps;
+using PAppsManager.Core.SingleInstance;
 using PAppsManager.Properties;
 using PAppsManager.ViewModels;
 
@@ -77,8 +78,11 @@ namespace PAppsManager
 
         protected override void OnExit(object sender, EventArgs e)
         {
-            // Remove the papps:// URL protocol handler.
-            UrlProtocol.Disassociate("papp");
+            if (!_singleInstance.IsAlreadyRunning)
+            {
+                // Remove the papps:// URL protocol handler.
+                UrlProtocol.Disassociate("papp");
+            }
 
             // Allow opening another instance of this application.
             _singleInstance.Dispose();

@@ -2,7 +2,7 @@ using System;
 using System.ServiceModel;
 using System.Threading;
 
-namespace PAppsManager.Core
+namespace PAppsManager.Core.SingleInstance
 {
     /// <summary>
     /// Helper to force a single application instance and communicate with it from another instance.
@@ -89,7 +89,7 @@ namespace PAppsManager.Core
         {
             // Run client
             var tcpFactory = new ChannelFactory<ISingleInstanceApp>(new NetNamedPipeBinding(),
-                                                                         "net.pipe://localhost");
+                                                                    "net.pipe://localhost");
             return tcpFactory.CreateChannel();
         }
     }

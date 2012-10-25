@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 
-namespace PAppsManager.Core
+namespace PAppsManager.Core.SingleInstance
 {
     [ServiceContract]
     public interface ISingleInstanceApp
