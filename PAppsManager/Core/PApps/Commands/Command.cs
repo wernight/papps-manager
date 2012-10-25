@@ -40,7 +40,8 @@ namespace PAppsManager.Core.PApps.Commands
             if (!allowEmpty && string.IsNullOrWhiteSpace(path))
                 return "Path cannot be empty.";
 
-            if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            var invalidChars = Path.GetInvalidFileNameChars().Where(ch => ch != Path.DirectorySeparatorChar && ch != Path.AltDirectorySeparatorChar).ToArray();
+            if (path.IndexOfAny(invalidChars) != -1)
                 return "Path contain invalid characters.";
 
             if (Path.IsPathRooted(path))

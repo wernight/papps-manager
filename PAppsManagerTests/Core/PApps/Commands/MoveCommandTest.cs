@@ -12,6 +12,9 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [SetUp]
         public void SetUp()
         {
+            // Clean-up last execution (just in case).
+            TearDown();
+
             Directory.CreateDirectory(Path.Combine(_targetDirectory.FullName, "a1/b1"));
             File.Create(Path.Combine(_targetDirectory.FullName, "a1/file1")).Dispose();
             File.Create(Path.Combine(_targetDirectory.FullName, "a1/b1/file2")).Dispose();

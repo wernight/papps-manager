@@ -12,37 +12,42 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [SetUp]
         public void SetUp()
         {
-            Directory.CreateDirectory("DeleteCommandTest/a/b/c");
-            File.Create("DeleteCommandTest/a/b/c/file.txt").Dispose();
+            // Clean-up last execution (just in case).
+            TearDown();
+
+            Directory.CreateDirectory(Path.Combine(_targetDirectory.FullName, "a/b/c"));
+            File.Create(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")).Dispose();
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (Directory.Exists("DeleteCommandTest"))
-                Directory.Delete("DeleteCommandTest", true);
+            if (_targetDirectory.Exists)
+                _targetDirectory.Delete(true);
         }
 
         #endregion
+
+        private readonly DirectoryInfo _targetDirectory = new DirectoryInfo("DeleteCommandTest");
 
         [Test]
         public void CanWorkWithVariousPathDelimiters()
         {
             new DeleteCommand
                 {IncludeFiles = "a" + Path.DirectorySeparatorChar + "b" + Path.AltDirectorySeparatorChar + "c/file.txt"}
-                .Execute(new DirectoryInfo("DeleteCommandTest"));
+                .Execute(_targetDirectory);
 
-            Expect(!File.Exists("DeleteCommandTest/a/b/c/file.txt"));
+            Expect(!File.Exists(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")));
         }
 
         [Test]
         public void DeletesEmptyDirectories()
         {
-            new DeleteCommand {IncludeFiles = @"a\b\c\file.txt"}.Execute(new DirectoryInfo("DeleteCommandTest"));
+            new DeleteCommand {IncludeFiles = @"a\b\c\file.txt"}.Execute(_targetDirectory);
 
-            Expect(!File.Exists("DeleteCommandTest/a/b/c/file.txt"));
-            Expect(!Directory.Exists("DeleteCommandTest/a"));
-            Expect(Directory.Exists("DeleteCommandTest"));
+            Expect(!File.Exists(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")));
+            Expect(!Directory.Exists(Path.Combine(_targetDirectory.FullName, "a")));
+            Expect(_targetDirectory.Exists);
         }
     }
 }
