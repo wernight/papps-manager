@@ -1,6 +1,6 @@
 using System;
-using System.Net;
-using JetBrains.Annotations;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using PAppsManager.Core.PApps.Commands;
 
@@ -8,38 +8,41 @@ namespace PAppsManager.Core.PApps
 {
     internal class PortableApplication
     {
-        public static PortableApplication LoadFromUrl(string url)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url">URL of the applicatin.</param>
+        /// <param name="webClient">A function that returns the JSON string downloaded from a given URL.</param>
+        /// <returns></returns>
+        public static PortableApplication LoadFromUrl(string url, Func<string, string> webClient)
         {
-            using (var webClient = new WebClient())
-            {
-                string json = webClient.DownloadString(url);
+            // Change protocol (if necessary).
+            url = Regex.Replace(url, @"^papp://", "http://");
 
-                var application = JsonConvert.DeserializeObject<PortableApplication>(json);
-                application.Url = url;
+            string json = webClient(url);
 
-                application.Validate();
+            var application = JsonConvert.DeserializeObject<PortableApplication>(json, new DependencyJsonConverter(webClient));
+            application.Url = url;
 
-                return application;
-            }
+            application.Validate();
+
+            return application;
         }
 
         /// <summary>
         /// Unique URL identifying this application.
         /// </summary>
-        [NotNull]
         public string Url { get; set; }
 
         /// <summary>
         /// Program name.
         /// Should be identical if it's the same program (but not a must).
         /// </summary>
-        [NotNull]
         public string Name { get; set; }
 
         /// <summary>
         /// Human version to display. Could be anything.
         /// </summary>
-        [NotNull]
         public string Version { get; set; }
 
         /// <summary>
@@ -49,10 +52,15 @@ namespace PAppsManager.Core.PApps
         public DateTime ReleaseDate { get; set; }
 
         /// <summary>
+        /// URLs of other applications this application depends on in order to be installed and/or work.
+        /// </summary>
+        public PortableApplication[] Dependencies { get; set; }
+
+        /// <summary>
         /// Operations to perform to retrieve and set up the portable application.
         /// This excludes any portabilization but only includes how to get the portable binaries.
         /// </summary>
-        [NotNull,JsonProperty("install_commands")]
+        [JsonProperty("install_commands")]
         public CommandList InstallCommands { get; set; }
 
         /// <summary>
@@ -66,6 +74,8 @@ namespace PAppsManager.Core.PApps
                 throw new JsonException("Portable application version is not defined.");
             if (ReleaseDate == DateTime.MinValue)
                 throw new JsonException("Portable application release date is not defined.");
+            if (Dependencies == null)
+                throw new JsonException("Portable application dependencies are not defined.");
             if (InstallCommands == null || InstallCommands.Count == 0)
                 throw new JsonException("Portable application has no installation commands.");
             InstallCommands.Validate();
@@ -92,6 +102,37 @@ namespace PAppsManager.Core.PApps
         public override int GetHashCode()
         {
             return (Url != null ? Url.GetHashCode() : 0);
+        }
+
+        internal class DependencyJsonConverter : JsonConverter
+        {
+            private readonly Func<string, string> _webClient;
+
+            public DependencyJsonConverter(Func<string, string> webClient)
+            {
+                _webClient = webClient;
+            }
+
+            #region Overrides of JsonConverter
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(PortableApplication[]);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var urls = serializer.Deserialize<string[]>(reader);
+
+                return urls.Select(url => LoadFromUrl(url, _webClient)).ToArray();
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
         }
     }
 }

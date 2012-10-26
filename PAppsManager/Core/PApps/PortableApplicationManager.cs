@@ -31,10 +31,21 @@ namespace PAppsManager.Core.PApps
             get { return _applications; }
         }
 
+        public bool IsAlreadyInstalled(PortableApplication application)
+        {
+            return _applications.Contains(application);
+        }
+
         public void Install(PortableApplication application)
         {
-            if (_applications.Contains(application))
+            if (IsAlreadyInstalled(application))
                 throw new Exception("Portable application already installed: " + application);
+
+            foreach (PortableApplication dependency in application.Dependencies)
+            {
+                if (!IsAlreadyInstalled(dependency))
+                    Install(dependency);
+            }
 
             try
             {

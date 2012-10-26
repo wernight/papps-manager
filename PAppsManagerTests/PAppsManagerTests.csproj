@@ -41,6 +41,7 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +51,7 @@
     <Compile Include="Core\PApps\CommandListTest.cs" />
     <Compile Include="Core\PApps\Commands\MoveCommandTest.cs" />
     <Compile Include="Core\PApps\PortableApplicationManager.cs" />
+    <Compile Include="Core\PApps\PortableApplicationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

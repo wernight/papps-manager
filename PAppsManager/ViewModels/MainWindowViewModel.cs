@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Net;
 using System.Windows;
 using Caliburn.Micro;
 using PAppsManager.Core.PApps;
@@ -23,13 +23,12 @@ namespace PAppsManager.ViewModels
 
         public void InstallApplication(string url)
         {
-            // Change protocol (if necessary).
-            url = Regex.Replace(url, @"^papp://", "http://");
-
             try
             {
                 // Load the application info.
-                PortableApplication application = PortableApplication.LoadFromUrl(url);
+                PortableApplication application;
+                using (var webClient = new WebClient())
+                    application = PortableApplication.LoadFromUrl(url, webClient.DownloadString);
 
                 // Confirm installation.
                 if (MessageBox.Show(string.Format("Do you want to the install the portable application {0}?", application.Name), "PApps Manager - Install Applicaiton", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
