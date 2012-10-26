@@ -89,7 +89,8 @@ namespace PAppsManager.Core.PApps.Commands
 
             string baseDirectoryFullName = baseDirectory.FullName + Path.DirectorySeparatorChar;
 
-            while (directory != null && directory.FullName.StartsWith(baseDirectoryFullName) &&
+            while (directory != null && directory.Exists &&
+                   directory.FullName.StartsWith(baseDirectoryFullName) &&
                    !directory.GetDirectories().Any() && !directory.GetFiles().Any())
             {
                 // Delete empty directories.
