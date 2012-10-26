@@ -19,7 +19,7 @@ namespace PAppsManagerTests.Core.PApps
                                 "{execute: {fail_on_error: false}}," +
                                 "{extract: {file: 'example.zip'}}," +
                                 "{move: {}}," +
-                                "{7zip: {arguments: 'x paf.exe'}}" +
+                                "{uniextract: {file: 'paf.exe'}}" +
                                 "]";
 
             var commandList = JsonConvert.DeserializeObject<CommandList>(json);
@@ -34,7 +34,7 @@ namespace PAppsManagerTests.Core.PApps
             Expect(commandList[5], Is.InstanceOf<ExecuteCommand>().With.Property("FailOnError").False);
             Expect(commandList[6], Is.InstanceOf<ExtractCommand>().With.Property("FileName").EqualTo("example.zip"));
             Expect(commandList[7], Is.InstanceOf<MoveCommand>());
-            Expect(commandList[8], Is.InstanceOf<SevenZipCommand>().With.Property("Arguments").EqualTo("x paf.exe"));
+            Expect(commandList[8], Is.InstanceOf<UniExtractCommand>().With.Property("FileName").EqualTo("paf.exe"));
         }
 
         [TestCase("[]")]

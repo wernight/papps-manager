@@ -1,0 +1,7 @@
+Generating a Release
+====================
+
+ 1. Compile the solution in Release mode.
+ 2. Download and extract Universal Extractor, see `PortableDriveRoot\UniExtract\`
+ 2. Compile with NSIS `PortableDriveRoot\Start.nsi`
+ 3. Compile with NSIS `PAppsManager-Setup.nsi`

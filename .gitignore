@@ -16,3 +16,6 @@ _ReSharper.*/
 # NSIS generated files
 /PAppsManager-Setup.exe
 /PortableDriveRoot/Start.exe
+
+# Manually downloaded files
+/PortableDriveRoot/UniExtract/

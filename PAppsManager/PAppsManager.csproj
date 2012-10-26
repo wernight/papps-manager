@@ -95,7 +95,7 @@
     <Compile Include="Core\PApps\Commands\ICommand.cs" />
     <Compile Include="Core\PApps\Commands\MoveCommand.cs" />
     <Compile Include="Core\PApps\Commands\CommandList.cs" />
-    <Compile Include="Core\PApps\Commands\SevenZipCommand.cs" />
+    <Compile Include="Core\PApps\Commands\UniExtractCommand.cs" />
     <Compile Include="Core\PApps\PortableApplication.cs" />
     <Compile Include="Core\PApps\PortableApplicationManager.cs" />
     <Compile Include="Core\SingleInstance\ISingleInstanceApp.cs" />
@@ -144,9 +144,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="7-Zip\x86\7z.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="7-Zip\x86\7z.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\Icons\AppIcon.ico" />

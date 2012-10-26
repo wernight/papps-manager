@@ -1,6 +1,6 @@
 Name "PApps Manager Launcher"
 OutFile "Start.exe"
-Icon "..\PAppsManager\Resources\Icons\TrayIcon.ico"
+Icon "..\PAppsManager\Resources\Icons\AppIcon.ico"
 
 WindowIcon Off ; show no icon of the launcher
 SilentInstall Silent ; start as launcher, not as installer

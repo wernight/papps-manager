@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,17 +25,31 @@ namespace PAppsManager.Core.PApps.Commands
 
         public virtual void Execute(DirectoryInfo targetDirectory)
         {
-            foreach (ICommand action in this)
+            foreach (ICommand command in this)
             {
-                action.Execute(targetDirectory);
+                try
+                {
+                    command.Execute(targetDirectory);
+                }
+                catch (Exception e)
+                {
+                    throw new CommandException("Failed to execute the command " + command.GetType().Name + ": " + e.Message, e);
+                }
             }
         }
 
         public virtual void CleanUp(bool successful)
         {
-            foreach (ICommand action in this)
+            foreach (ICommand command in this)
             {
-                action.CleanUp(successful);
+                try
+                {
+                    command.CleanUp(successful);
+                }
+                catch (Exception e)
+                {
+                    throw new CommandException("Failed to clean-up after the command " + command.GetType().Name + ": " + e.Message, e);
+                }
             }
         }
 

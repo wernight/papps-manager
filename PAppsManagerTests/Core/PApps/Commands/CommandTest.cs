@@ -25,6 +25,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [TestCase(@"Foo", Result = true)]
         [TestCase(@"Foo/Bar\.file", Result = true)]
         [TestCase(@"Foo/..", Result = true)]
+        [TestCase(@"Foo\Bar\", Result = true)]
         [TestCase(@"../Foo", Result = false)]
         [TestCase(@"C:\Foo", Result = false)]
         [TestCase(@"\\Foo", Result = false)]
@@ -33,6 +34,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [TestCase(@"?", Result = false)]
         [TestCase(@"Foo<Bar", Result = false)]
         [TestCase(@"Foo|Bar", Result = false)]
+        [TestCase(@"Foo""Bar", Result = false)]
         public bool ValidateRelativePath(string path)
         {
             return Command.ValidateRelativePath(path) == null;
