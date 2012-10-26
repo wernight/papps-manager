@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using PAppsManager.Core.PApps;
+using PAppsManager.Core.PApps.Commands;
+using PAppsManagerTests.Core.PApps.Commands;
 
 namespace PAppsManagerTests.Core.PApps
 {
@@ -43,6 +45,44 @@ namespace PAppsManagerTests.Core.PApps
             Expect(application.InstallCommands, Has.Count.EqualTo(1));
 
             Expect(application.Dependencies[0].Name, Is.EqualTo("Bar"));
+        }
+
+        [Test]
+        public void CanSerializeToJsonWithoutInstallationCommands()
+        {
+            var application = new PortableApplication
+                {
+                    Url = "http://example.com/foo.json",
+                    Name = "UnitTest",
+                    Version = "1.0.0.0",
+                    ReleaseDate = new DateTime(2000, 1, 1),
+                    Dependencies = new[]
+                        {
+                            new PortableApplication {Url = "http://example.com/bar.json"}
+                        },
+                    InstallCommands = new CommandList {new DummyCommand()},
+                };
+
+            string json = application.ToJson();
+
+            Expect(json, Is.Not.Null);
+            Expect(json, Is.StringContaining("http://example.com/foo.json"));
+            Expect(json, Is.StringContaining("http://example.com/bar.json"));
+
+            // Can deserialize it back to the application.
+            var fakeWebClient = new Dictionary<string, string>
+                {
+                    {"http://example.com/foo.json", json},
+                    {"http://example.com/bar.json", "{}"},
+                };
+            var deserialized = PortableApplication.LoadFromUrl("http://example.com/foo.json", url => fakeWebClient[url]);
+
+            Expect(deserialized.Url, Is.EqualTo(application.Url));
+            Expect(deserialized.Name, Is.EqualTo(application.Name));
+            Expect(deserialized.Version, Is.EqualTo(application.Version));
+            Expect(deserialized.ReleaseDate, Is.EqualTo(application.ReleaseDate));
+            Expect(deserialized.Dependencies, Is.EquivalentTo(application.Dependencies));
+            Expect(deserialized.InstallCommands, Is.Null);
         }
     }
 }

@@ -27,6 +27,9 @@ namespace PAppsManager.Core.PApps.Commands
                 throw new JsonException("Invalid JSON: Failed to deserialize: " + e.Message, e);
             }
 
+            if (jsonActions == null)
+                return null;
+
             // Retrieve the single action of each.
             var actions = jsonActions.Select(jsonAction => jsonAction.Command);
             return new CommandList(actions);
@@ -34,7 +37,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            // We don't serialize them (as we don't need to and we should get them fresh when installing).
         }
 
         [UsedImplicitly]

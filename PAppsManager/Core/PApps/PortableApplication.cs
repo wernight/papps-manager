@@ -24,25 +24,31 @@ namespace PAppsManager.Core.PApps
             var application = JsonConvert.DeserializeObject<PortableApplication>(json, new DependencyJsonConverter(webClient));
             application.Url = url;
 
-            application.Validate();
-
             return application;
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, new DependencyJsonConverter(null));
         }
 
         /// <summary>
         /// Unique URL identifying this application.
         /// </summary>
+        [JsonProperty("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// Program name.
         /// Should be identical if it's the same program (but not a must).
         /// </summary>
+        [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Human version to display. Could be anything.
         /// </summary>
+        [JsonProperty("version")]
         public string Version { get; set; }
 
         /// <summary>
@@ -54,6 +60,7 @@ namespace PAppsManager.Core.PApps
         /// <summary>
         /// URLs of other applications this application depends on in order to be installed and/or work.
         /// </summary>
+        [JsonProperty("dependencies")]
         public PortableApplication[] Dependencies { get; set; }
 
         /// <summary>
@@ -123,13 +130,17 @@ namespace PAppsManager.Core.PApps
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 var urls = serializer.Deserialize<string[]>(reader);
+                if (urls == null)
+                    return null;
 
                 return urls.Select(url => LoadFromUrl(url, _webClient)).ToArray();
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                throw new NotImplementedException();
+                var applications = (PortableApplication[]) value;
+                var applicatinsUrls = applications.Select(application => application.Url).ToArray();
+                serializer.Serialize(writer, applicatinsUrls);
             }
 
             #endregion

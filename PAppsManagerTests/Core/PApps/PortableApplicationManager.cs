@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
 using NUnit.Framework;
 using PAppsManager.Core.PApps;
 using PAppsManager.Core.PApps.Commands;
+using PAppsManagerTests.Core.PApps.Commands;
 
 namespace PAppsManagerTests.Core.PApps
 {
@@ -26,22 +26,6 @@ namespace PAppsManagerTests.Core.PApps
 
             _manager.Install(app);
             Expect(() => _manager.Install(app), Throws.Exception);
-        }
-
-        private class DummyCommand : ICommand
-        {
-            public string Validate()
-            {
-                return null;
-            }
-
-            public void Execute(DirectoryInfo targetDirectory)
-            {
-            }
-
-            public void CleanUp(bool successful)
-            {
-            }
         }
     }
 }
