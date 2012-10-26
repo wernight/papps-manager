@@ -25,7 +25,7 @@ namespace PAppsManager.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PApps")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Applications")]
         public string PortableApplicationsBaseDirectory {
             get {
                 return ((string)(this["PortableApplicationsBaseDirectory"]));

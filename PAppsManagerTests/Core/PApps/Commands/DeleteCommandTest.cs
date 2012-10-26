@@ -12,8 +12,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [SetUp]
         public void SetUp()
         {
-            // Clean-up last execution (just in case).
-            TearDown();
+            _targetDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.Combine("PAppsManagerUnitTests/DeleteCommandTest", Path.GetRandomFileName())));
 
             Directory.CreateDirectory(Path.Combine(_targetDirectory.FullName, "a/b/c"));
             File.Create(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")).Dispose();
@@ -28,7 +27,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
 
         #endregion
 
-        private readonly DirectoryInfo _targetDirectory = new DirectoryInfo("DeleteCommandTest");
+        private DirectoryInfo _targetDirectory;
 
         [Test]
         public void CanWorkWithVariousPathDelimiters()

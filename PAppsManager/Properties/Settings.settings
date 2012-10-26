@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="PortableApplicationsBaseDirectory" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">PApps</Value>
+      <Value Profile="(Default)">Applications</Value>
     </Setting>
   </Settings>
 </SettingsFile>

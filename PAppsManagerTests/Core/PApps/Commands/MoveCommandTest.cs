@@ -12,8 +12,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [SetUp]
         public void SetUp()
         {
-            // Clean-up last execution (just in case).
-            TearDown();
+            _targetDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.Combine("PAppsManagerUnitTests/MoveCommandTest", Path.GetRandomFileName())));
 
             Directory.CreateDirectory(Path.Combine(_targetDirectory.FullName, "a1/b1"));
             File.Create(Path.Combine(_targetDirectory.FullName, "a1/file1")).Dispose();
@@ -31,7 +30,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
 
         #endregion
 
-        private readonly DirectoryInfo _targetDirectory = new DirectoryInfo("MoveCommentTest");
+        private DirectoryInfo _targetDirectory;
 
         [Test]
         public void DestinationFolderIsAutomaticallyCreated()

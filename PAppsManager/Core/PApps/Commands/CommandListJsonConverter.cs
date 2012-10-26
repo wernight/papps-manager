@@ -45,6 +45,7 @@ namespace PAppsManager.Core.PApps.Commands
             public DisplayCommand Display;
             public DownloadCommand Download;
             public ErrorCommand Error;
+            public EulaCommand Eula;
             public ExecuteCommand Execute;
             public ExtractCommand Extract;
             public MoveCommand Move;
@@ -72,6 +73,7 @@ namespace PAppsManager.Core.PApps.Commands
                     yield return Display;
                     yield return Download;
                     yield return Error;
+                    yield return Eula;
                     yield return Execute;
                     yield return Extract;
                     yield return Move;

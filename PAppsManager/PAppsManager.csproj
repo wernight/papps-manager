@@ -86,6 +86,7 @@
     <Compile Include="Core\PApps\Commands\CommandListJsonConverter.cs" />
     <Compile Include="Core\PApps\Commands\DeleteCommand.cs" />
     <Compile Include="Core\PApps\Commands\DownloadCommand.cs" />
+    <Compile Include="Core\PApps\Commands\EulaCommand.cs" />
     <Compile Include="Core\PApps\Commands\ExecuteCommand.cs" />
     <Compile Include="Core\PApps\Commands\ExtractCommand.cs" />
     <Compile Include="Core\PApps\Commands\ErrorCommand.cs" />
