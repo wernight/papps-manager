@@ -23,13 +23,13 @@ namespace PAppsManager.Core.PApps.Commands
             return this.Select(action => action.Validate()).FirstOrDefault(validate => validate != null);
         }
 
-        public virtual void Execute(DirectoryInfo targetDirectory)
+        public virtual void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             foreach (ICommand command in this)
             {
                 try
                 {
-                    command.Execute(targetDirectory);
+                    command.Execute(targetDirectory, portableEnvironment);
                 }
                 catch (Exception e)
                 {

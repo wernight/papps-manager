@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
-    public class DeleteCommand : Command
+    internal class DeleteCommand : Command
     {
         /// <summary>
         /// Files to delete, relative to the installation directory.
@@ -23,7 +23,7 @@ namespace PAppsManager.Core.PApps.Commands
             return ValidateRegex(WildcardToRegex(IncludeFiles));
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             var possiblyEmptyDirectories = new HashSet<DirectoryInfo>();
 

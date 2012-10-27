@@ -14,7 +14,7 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             if (string.IsNullOrEmpty(Message))
                 throw new CommandException("Undefined error message.");

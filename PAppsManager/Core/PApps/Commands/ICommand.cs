@@ -2,7 +2,7 @@ using System.IO;
 
 namespace PAppsManager.Core.PApps.Commands
 {
-    public interface ICommand
+    internal interface ICommand
     {
         /// <summary>
         /// Verified that all required info are provided and look valid.
@@ -14,7 +14,7 @@ namespace PAppsManager.Core.PApps.Commands
         /// <summary>
         /// Perform the action.
         /// </summary>
-        void Execute(DirectoryInfo targetDirectory);
+        void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment);
 
         /// <summary>
         /// Post-installation operation.

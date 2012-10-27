@@ -11,7 +11,7 @@ namespace PAppsManager.Core.PApps.Commands
     /// <summary>
     /// Portable application installation action.
     /// </summary>
-    public abstract class Command : ICommand
+    internal abstract class Command : ICommand
     {
         protected static string ExeDirectory
         {
@@ -20,7 +20,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public abstract string Validate();
 
-        public abstract void Execute(DirectoryInfo targetDirectory);
+        public abstract void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment);
 
         public virtual void CleanUp(bool successful)
         {

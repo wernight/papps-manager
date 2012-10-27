@@ -1,4 +1,5 @@
 using System.IO;
+using PAppsManager.Core.PApps;
 using PAppsManager.Core.PApps.Commands;
 
 namespace PAppsManagerTests.Core.PApps.Commands
@@ -10,7 +11,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
             return null;
         }
 
-        public void Execute(DirectoryInfo targetDirectory)
+        public void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
         }
 

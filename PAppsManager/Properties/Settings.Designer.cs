@@ -26,9 +26,18 @@ namespace PAppsManager.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Applications")]
-        public string PortableApplicationsBaseDirectory {
+        public string PortableApplicationsDefaultInstallDirectory {
             get {
-                return ((string)(this["PortableApplicationsBaseDirectory"]));
+                return ((string)(this["PortableApplicationsDefaultInstallDirectory"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("PApps")]
+        public string StartMenuDirectoryName {
+            get {
+                return ((string)(this["StartMenuDirectoryName"]));
             }
         }
     }

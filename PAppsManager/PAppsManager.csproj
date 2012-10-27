@@ -67,7 +67,9 @@
       <HintPath>..\packages\SevenZipSharp.0.64\lib\SevenZipSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -82,6 +84,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\PApps\PortableApplicationCollection.cs" />
     <Compile Include="Core\PApps\Commands\CommandException.cs" />
     <Compile Include="Core\PApps\Commands\CommandListJsonConverter.cs" />
     <Compile Include="Core\PApps\Commands\DeleteCommand.cs" />
@@ -95,13 +98,19 @@
     <Compile Include="Core\PApps\Commands\ICommand.cs" />
     <Compile Include="Core\PApps\Commands\MoveCommand.cs" />
     <Compile Include="Core\PApps\Commands\CommandList.cs" />
+    <Compile Include="Core\PApps\Commands\ShortcutCommand.cs" />
     <Compile Include="Core\PApps\Commands\UniExtractCommand.cs" />
+    <Compile Include="Core\PApps\EnvironmentVariables.cs" />
     <Compile Include="Core\PApps\PortableApplication.cs" />
-    <Compile Include="Core\PApps\PortableApplicationManager.cs" />
+    <Compile Include="Core\PApps\PortableEnvironment.cs" />
+    <Compile Include="Core\PApps\Shortcut.cs" />
+    <Compile Include="Core\PApps\ShortcutCollection.cs" />
+    <Compile Include="Core\ShellLink\FileIcon.cs" />
     <Compile Include="Core\SingleInstance\ISingleInstanceApp.cs" />
     <Compile Include="Core\SingleInstance\SingleInstance.cs" />
     <Compile Include="Core\SingleInstance\SingleInstanceApp.cs" />
     <Compile Include="Core\UrlProtocol.cs" />
+    <Compile Include="Core\ShellLink\ShellLink.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\MainWindowView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -9,7 +9,7 @@ namespace PAppsManagerTests.Core.PApps
     [TestFixture]
     public class PortableApplicationManagerTest : AssertionHelper
     {
-        private readonly PortableApplicationManager _manager = new PortableApplicationManager();
+        private readonly PortableEnvironment _environment = new PortableEnvironment();
 
         [Test]
         public void CannotInstallAlreadyInstalledApplication()
@@ -24,8 +24,8 @@ namespace PAppsManagerTests.Core.PApps
                               InstallCommands = new CommandList { new DummyCommand() },
                           };
 
-            _manager.Install(app);
-            Expect(() => _manager.Install(app), Throws.Exception);
+            _environment.Applications.Add(app);
+            Expect(() => _environment.Applications.Add(app), Throws.Exception);
         }
     }
 }

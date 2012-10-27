@@ -52,6 +52,7 @@ namespace PAppsManager.Core.PApps.Commands
             public ExecuteCommand Execute;
             public ExtractCommand Extract;
             public MoveCommand Move;
+            public ShortcutCommand Shortcut;
             public UniExtractCommand UniExtract;
 #pragma warning restore 649
 
@@ -80,6 +81,7 @@ namespace PAppsManager.Core.PApps.Commands
                     yield return Execute;
                     yield return Extract;
                     yield return Move;
+                    yield return Shortcut;
                     yield return UniExtract;
                 }
             }

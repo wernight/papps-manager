@@ -21,7 +21,7 @@ namespace PAppsManager.Core.PApps.Commands
             return ValidateRelativePath(FileName);
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             // Decompress the file.
             SevenZipBase.SetLibraryPath(SevenZipLibPath);

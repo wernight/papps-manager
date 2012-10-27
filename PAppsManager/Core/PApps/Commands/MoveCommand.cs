@@ -8,7 +8,7 @@ namespace PAppsManager.Core.PApps.Commands
     /// <summary>
     /// Rename one of more files keeping the directory structure.
     /// </summary>
-    public class MoveCommand : Command
+    internal class MoveCommand : Command
     {
         public MoveCommand()
         {
@@ -50,7 +50,7 @@ namespace PAppsManager.Core.PApps.Commands
             return ValidateRelativePath(FromDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateRelativePath(ToDirectory, true);
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             var fromDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, FromDirectory));
             var toDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, ToDirectory));

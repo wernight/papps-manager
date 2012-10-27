@@ -40,7 +40,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
                     FromDirectory = "a1",
                     ToDirectory = "a2",
                     IncludeFiles = "*/*",
-                }.Execute(_targetDirectory);
+                }.Execute(_targetDirectory, null);
 
             Expect(File.Exists(Path.Combine(_targetDirectory.FullName, "a1/file1")));
             Expect(!File.Exists(Path.Combine(_targetDirectory.FullName, "a1/b1/file2")));
@@ -54,7 +54,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
                 {
                     FromDirectory = "a1",
                     ToDirectory = "a1",
-                }.Execute(_targetDirectory);
+                }.Execute(_targetDirectory, null);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
                 {
                     FromDirectory = "a1",
                     ToDirectory = "does_not_exist",
-                }.Execute(_targetDirectory);
+                }.Execute(_targetDirectory, null);
 
             Expect(Directory.Exists(Path.Combine(_targetDirectory.FullName, "does_not_exist")));
         }
@@ -77,7 +77,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
                     FromDirectory = "does_not_exist",
                 };
 
-            Expect(() => moveCommand.Execute(_targetDirectory), Throws.InstanceOf<DirectoryNotFoundException>());
+            Expect(() => moveCommand.Execute(_targetDirectory, null), Throws.InstanceOf<DirectoryNotFoundException>());
         }
     }
 }

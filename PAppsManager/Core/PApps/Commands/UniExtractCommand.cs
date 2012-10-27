@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
-    public class UniExtractCommand : Command
+    internal class UniExtractCommand : Command
     {
         public UniExtractCommand()
         {
@@ -44,7 +44,7 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             var file = new FileInfo(Path.Combine(targetDirectory.FullName, FileName));
             var toDirectory = new DirectoryInfo(Path.Combine(targetDirectory.FullName, ToDirectory));

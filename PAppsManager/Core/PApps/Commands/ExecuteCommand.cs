@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace PAppsManager.Core.PApps.Commands
 {
-    public class ExecuteCommand : Command
+    internal class ExecuteCommand : Command
     {
         public ExecuteCommand()
         {
@@ -24,7 +24,7 @@ namespace PAppsManager.Core.PApps.Commands
             return ValidateRelativePath(FileName);
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             var psi = new ProcessStartInfo(FileName, Arguments)
                 {

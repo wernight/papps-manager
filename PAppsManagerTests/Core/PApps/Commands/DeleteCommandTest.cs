@@ -12,7 +12,10 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [SetUp]
         public void SetUp()
         {
-            _targetDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Path.Combine("PAppsManagerUnitTests/DeleteCommandTest", Path.GetRandomFileName())));
+            _targetDirectory =
+                new DirectoryInfo(Path.Combine(Path.GetTempPath(),
+                                               Path.Combine("PAppsManagerUnitTests/DeleteCommandTest",
+                                                            Path.GetRandomFileName())));
 
             Directory.CreateDirectory(Path.Combine(_targetDirectory.FullName, "a/b/c"));
             File.Create(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")).Dispose();
@@ -34,7 +37,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         {
             new DeleteCommand
                 {IncludeFiles = "a" + Path.DirectorySeparatorChar + "b" + Path.AltDirectorySeparatorChar + "c/file.txt"}
-                .Execute(_targetDirectory);
+                .Execute(_targetDirectory, null);
 
             Expect(!File.Exists(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")));
         }
@@ -42,7 +45,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [Test]
         public void DeletesEmptyDirectories()
         {
-            new DeleteCommand {IncludeFiles = @"a\b\c\file.txt"}.Execute(_targetDirectory);
+            new DeleteCommand {IncludeFiles = @"a\b\c\file.txt"}.Execute(_targetDirectory, null);
 
             Expect(!File.Exists(Path.Combine(_targetDirectory.FullName, "a/b/c/file.txt")));
             Expect(!Directory.Exists(Path.Combine(_targetDirectory.FullName, "a")));

@@ -11,7 +11,7 @@ namespace PAppsManager.Core.PApps.Commands
     /// <summary>
     /// Download a file.
     /// </summary>
-    public class DownloadCommand : Command
+    internal class DownloadCommand : Command
     {
         private string _outputFilePath;
 
@@ -62,7 +62,7 @@ namespace PAppsManager.Core.PApps.Commands
             return null;
         }
 
-        public override void Execute(DirectoryInfo targetDirectory)
+        public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
         {
             using (var webClient = new WebClient())
             {

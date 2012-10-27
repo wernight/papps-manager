@@ -19,12 +19,13 @@ namespace PAppsManagerTests.Core.PApps
                                 "{execute: {fail_on_error: false}}," +
                                 "{extract: {file: 'example.zip'}}," +
                                 "{move: {}}," +
+                                "{shortcut: {name: 'foo.lnk', target: 'paf.exe'}}," +
                                 "{uniextract: {file: 'paf.exe'}}" +
                                 "]";
 
             var commandList = JsonConvert.DeserializeObject<CommandList>(json);
 
-            Expect(commandList, Has.Count.EqualTo(9));
+            Expect(commandList, Has.Count.EqualTo(10));
 
             Expect(commandList[0], Is.InstanceOf<DeleteCommand>());
             Expect(commandList[1], Is.InstanceOf<DisplayCommand>());
@@ -34,7 +35,8 @@ namespace PAppsManagerTests.Core.PApps
             Expect(commandList[5], Is.InstanceOf<ExecuteCommand>().With.Property("FailOnError").False);
             Expect(commandList[6], Is.InstanceOf<ExtractCommand>().With.Property("FileName").EqualTo("example.zip"));
             Expect(commandList[7], Is.InstanceOf<MoveCommand>());
-            Expect(commandList[8], Is.InstanceOf<UniExtractCommand>().With.Property("FileName").EqualTo("paf.exe"));
+            Expect(commandList[8], Is.InstanceOf<ShortcutCommand>());
+            Expect(commandList[9], Is.InstanceOf<UniExtractCommand>().With.Property("FileName").EqualTo("paf.exe"));
         }
 
         [TestCase("[]")]
