@@ -20,8 +20,12 @@ Section
     File /r /x "Start.nsi" "PortableDriveRoot\"
 
     SetOutPath $INSTDIR\PAppsManager
-    File /r /x "*.vshost.*" "PAppsManager\bin\Release\*.exe" "PAppsManager\bin\Release\*.dll" "PAppsManager\bin\Release\*.config"
+    File /r /x "*.vshost.*" /x "*.json" "PAppsManager\bin\Release\*.exe" "PAppsManager\bin\Release\*.dll" "PAppsManager\bin\Release\*.config"
 
     CreateDirectory "$INSTDIR\Applications"
     CreateDirectory "$INSTDIR\PortableApps"
+
+    ; Start it
+    ExecShell "" '"$INSTDIR\Start.exe"'
+    ExecShell "" '"http://compareason.com/"'
 SectionEnd

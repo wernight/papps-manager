@@ -11,7 +11,8 @@ AutoCloseWindow True ; automatically close when finished
 
 Section
     Call CheckAndInstallDotNet
-    Exec "PAppsManager\PAppsManager.exe"
+    SetOutPath "PAppsManager"
+    Exec "PAppsManager.exe"
 SectionEnd
 
 ; Check that .NET Framework 4.5 is installed.

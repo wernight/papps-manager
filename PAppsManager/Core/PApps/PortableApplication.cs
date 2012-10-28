@@ -19,9 +19,31 @@ namespace PAppsManager.Core.PApps
             // Change protocol (if necessary).
             url = Regex.Replace(url, @"^papp://", "http://");
 
-            string json = webClient(url);
+            // Load the JSON
+            string json;
+            try
+            {
+                json = webClient(url);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    "Failed to load " + url + ":" + Environment.NewLine
+                    + e.Message, e);
+            }
 
-            var application = JsonConvert.DeserializeObject<PortableApplication>(json, new DependencyJsonConverter(webClient));
+            // Parse and deserialize the JSON.
+            PortableApplication application;
+            try
+            {
+                application = JsonConvert.DeserializeObject<PortableApplication>(json, new DependencyJsonConverter(webClient));
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    "Failed to parse " + url + ":" + Environment.NewLine
+                    + e.Message, e);
+            }
             application.Url = url;
 
             return application;
@@ -133,7 +155,14 @@ namespace PAppsManager.Core.PApps
                 if (urls == null)
                     return null;
 
-                return urls.Select(url => LoadFromUrl(url, _webClient)).ToArray();
+                try
+                {
+                    return urls.Select(url => LoadFromUrl(url, _webClient)).ToArray();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Failed to load dependency: " + e.Message, e);
+                }
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
