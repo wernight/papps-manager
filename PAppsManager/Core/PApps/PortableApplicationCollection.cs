@@ -95,7 +95,7 @@ namespace PAppsManager.Core.PApps
                 _applications.Add(item);
                 item.InstallCommands.CleanUp(true);
             }
-            catch
+            catch (Exception ex)
             {
                 // Clean-up partially done work.
                 try
@@ -108,7 +108,7 @@ namespace PAppsManager.Core.PApps
                 {
                     // Swallow the exception.
                 }
-                throw;
+                throw new Exception("Installation of " + item.Name + " failed: " + ex.Message, ex);
             }
         }
 

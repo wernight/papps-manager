@@ -1,5 +1,5 @@
 [Autorun]
-Open=PAppsManager.exe
+Open=Start.exe
 Action=Start PApps Manager
 Icon=
 Label=PApps Manager

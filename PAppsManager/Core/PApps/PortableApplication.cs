@@ -161,7 +161,7 @@ namespace PAppsManager.Core.PApps
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Failed to load dependency: " + e.Message, e);
+                    throw new Exception("Couldn't load the dependency: " + e.Message, e);
                 }
             }
 

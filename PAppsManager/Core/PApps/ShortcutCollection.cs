@@ -115,6 +115,8 @@ namespace PAppsManager.Core.PApps
                     shellLink.WorkingDirectory = environmentVariables.Expand(item.WorkingDirectory);
                 if (!string.IsNullOrWhiteSpace(item.IconPath))
                     shellLink.IconPath = environmentVariables.Expand(item.IconPath);
+                else if (string.Compare(Path.GetExtension(shellLink.Target), ".exe", StringComparison.InvariantCultureIgnoreCase) == 0)
+                    shellLink.IconPath = shellLink.Target;
                 shellLink.DisplayMode = item.DisplayMode;
                 if (!string.IsNullOrWhiteSpace(item.Description))
                     shellLink.Description = item.Description;

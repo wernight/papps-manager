@@ -32,7 +32,7 @@ namespace PAppsManager.Core.SingleInstance
         /// <param name="callback">Call by other instances with the command line arguments passed to them.</param>
         public SingleInstance(string uniqueApplicationName, Action<string[]> callback)
         {
-            // Single instance of the applicaiton allowed.
+            // Single instance of the application allowed.
             bool createdNew;
             _mutex = new Mutex(true, uniqueApplicationName, out createdNew);
             IsAlreadyRunning = !createdNew;

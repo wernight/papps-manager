@@ -18,4 +18,5 @@ _ReSharper.*/
 /PortableDriveRoot/Start.exe
 
 # Manually downloaded files
-/PortableDriveRoot/UniExtract/
+/PortableDriveRoot/Applications/UniExtract/
+!/PortableDriveRoot/Applications/UniExtract/README.txt

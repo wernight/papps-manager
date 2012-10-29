@@ -47,7 +47,7 @@ namespace PAppsManager
                 ProcessCommandLineArguments(args);
             }
 
-            // Single instance of the applicaiton allowed.
+            // Single instance of the application allowed.
             if (_singleInstance.IsAlreadyRunning)
             {
                 MessageBox.Show(string.Format(Resources.ApplicationAlreadyRunning, ProductName), ProductName,

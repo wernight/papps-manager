@@ -11,7 +11,7 @@ AutoCloseWindow True ; automatically close when finished
 
 Section
     Call CheckAndInstallDotNet
-    SetOutPath "PAppsManager"
+    SetOutPath "Applications\PAppsManager"
     Exec "PAppsManager.exe"
 SectionEnd
 

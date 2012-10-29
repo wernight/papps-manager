@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="PortableApplicationsDefaultInstallDirectory" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Applications</Value>
+      <Value Profile="(Default)">..</Value>
     </Setting>
     <Setting Name="StartMenuDirectoryName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">PApps</Value>

@@ -12,7 +12,7 @@ namespace PAppsManager.ViewModels
     internal class MainWindowViewModel : PropertyChangedBase
     {
         private readonly PortableEnvironment _portableEnvironment;
-        private static readonly FileInfo EnvironmentJson = new FileInfo("Environment.json");
+        private static readonly FileInfo EnvironmentJson = new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Environment.json"));
 
         public MainWindowViewModel()
         {
@@ -51,12 +51,12 @@ namespace PAppsManager.ViewModels
 
                     MessageBox.Show(
                         string.Format("The portable application {0} has been install successfully. You can now use it like a regular application.", application.Name),
-                        "PApps Manager - Install Applicaiton");
+                        "PApps Manager - Install Application");
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show("Failed to install the application:" + Environment.NewLine + e.Message, "PApps Manager - Install Applicaiton",
+                MessageBox.Show("Failed to install the application:" + Environment.NewLine + e.Message, "PApps Manager - Install Application",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
