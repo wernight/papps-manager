@@ -18,7 +18,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            return ValidateRelativePath(FileName);
+            return ValidateRelativePath(() => FileName);
         }
 
         public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)

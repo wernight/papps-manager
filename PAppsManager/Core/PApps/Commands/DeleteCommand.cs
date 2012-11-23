@@ -20,7 +20,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            return ValidateRegex(WildcardToRegex(IncludeFiles));
+            return ValidateWildcard(() => IncludeFiles);
         }
 
         public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)

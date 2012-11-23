@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using PAppsManager.Core.PApps.Commands;
 
@@ -51,26 +52,26 @@ namespace PAppsManager.Core.PApps
 
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this, new DependencyJsonConverter(null));
+            return JsonConvert.SerializeObject(this, Formatting.Indented, new DependencyJsonConverter(null));
         }
 
         /// <summary>
         /// Unique URL identifying this application.
         /// </summary>
-        [JsonProperty("url")]
+        [CanBeNull, JsonProperty("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// Program name.
         /// Should be identical if it's the same program (but not a must).
         /// </summary>
-        [JsonProperty("name")]
+        [CanBeNull, JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Human version to display. Could be anything.
         /// </summary>
-        [JsonProperty("version")]
+        [CanBeNull, JsonProperty("version")]
         public string Version { get; set; }
 
         /// <summary>
@@ -82,21 +83,43 @@ namespace PAppsManager.Core.PApps
         /// <summary>
         /// URLs of other applications this application depends on in order to be installed and/or work.
         /// </summary>
-        [JsonProperty("dependencies")]
+        [CanBeNull, JsonProperty("dependencies")]
         public PortableApplication[] Dependencies { get; set; }
+
+        /// <summary>
+        /// Relative directory path containing all user settings and application's data files.
+        /// If left empty, all existing files are kept during an upgrade.
+        /// </summary>
+        [CanBeNull, JsonProperty("data_directory")]
+        public string DataDirectory { get; set; }
 
         /// <summary>
         /// Operations to perform to retrieve and set up the portable application.
         /// This excludes any portabilization but only includes how to get the portable binaries.
         /// </summary>
-        [JsonProperty("install_commands")]
+        [CanBeNull, JsonProperty("install_commands")]
         public CommandList InstallCommands { get; set; }
+
+        /// <summary>
+        /// Directory where the application has been installed.
+        /// Not returned by the server but stored locally.
+        /// </summary>
+        [CanBeNull, JsonProperty("install_directory")]
+        public string InstallDirectory { get; set; }
+
+        /// <summary>
+        /// Directory of the previous version back-up in case of an upgrade.
+        /// </summary>
+        [CanBeNull, JsonProperty("previous_version_install_directory")]
+        public string PreviousVersionInstallDirectory { get; set; }
 
         /// <summary>
         /// Check all required fields are present.
         /// </summary>
         public void Validate()
         {
+            if (string.IsNullOrWhiteSpace(Url))
+                throw new JsonException("Portable application URL is not defined.");
             if (string.IsNullOrWhiteSpace(Name))
                 throw new JsonException("Portable application name is not defined.");
             if (string.IsNullOrWhiteSpace(Version))
@@ -107,7 +130,10 @@ namespace PAppsManager.Core.PApps
                 throw new JsonException("Portable application dependencies are not defined.");
             if (InstallCommands == null || InstallCommands.Count == 0)
                 throw new JsonException("Portable application has no installation commands.");
-            InstallCommands.Validate();
+
+            string validationErrors = InstallCommands.Validate();
+            if (validationErrors != null)
+                throw new Exception("One or more installation commands are invalid: " + validationErrors);
         }
 
         public override string ToString()
@@ -133,6 +159,9 @@ namespace PAppsManager.Core.PApps
             return (Url != null ? Url.GetHashCode() : 0);
         }
 
+        /// <summary>
+        /// Class to de/serialize the dependency list.
+        /// </summary>
         internal class DependencyJsonConverter : JsonConverter
         {
             private readonly Func<string, string> _webClient;

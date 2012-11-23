@@ -41,7 +41,7 @@ namespace PAppsManager.Core.PApps.Commands
         public override string Validate()
         {
             // Validate the FileName
-            var valid = ValidateRelativePath(DestinationFileName);
+            var valid = ValidateRelativePath(() => DestinationFileName);
             if (valid != null)
                 return valid;
 

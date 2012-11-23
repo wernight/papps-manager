@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Threading;
 using Caliburn.Micro;
 using PAppsManager.Core.PApps;
+using PAppsManager.Properties;
 
 namespace PAppsManager.ViewModels
 {
@@ -13,6 +16,7 @@ namespace PAppsManager.ViewModels
     {
         private readonly PortableEnvironment _portableEnvironment;
         private static readonly FileInfo EnvironmentJson = new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Environment.json"));
+        private readonly DispatcherTimer _autoUpdateTime = new DispatcherTimer();
 
         public MainWindowViewModel()
         {
@@ -44,7 +48,13 @@ namespace PAppsManager.ViewModels
                 }
 
                 // Confirm installation.
-                if (MessageBox.Show(string.Format("Do you want to the install the portable application {0}?", application.Name), "PApps Manager - Install Application", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                string message;
+                if (!_portableEnvironment.Applications.Contains(application))
+                    message = string.Format("Do you want to the add the portable application {0}?", application.Name);
+                else
+                    message = string.Format("You already have the portable application {0}." + Environment.NewLine + "Do you want to reinstall it?", application.Name);
+
+                if (MessageBox.Show(message, "PApps Manager - Install Application", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     // Install the application.
                     _portableEnvironment.Applications.Add(application);
@@ -61,13 +71,44 @@ namespace PAppsManager.ViewModels
             }
         }
 
+        public void Update()
+        {
+            // Avoid spamming the server, there is no point checking that often.
+            if ((DateTime.UtcNow - Settings.Default.LastUpdateCheckTime).TotalMinutes < 1)
+                return;
+
+            // Retrieve a list of updates available.
+            IEnumerable<PortableApplication> updates = _portableEnvironment.Applications.Updates("http://compareason.com/update");
+
+            // Upgrade them all.
+            foreach (PortableApplication application in updates)
+            {
+                _portableEnvironment.Applications.Add(application);
+            }
+
+            // Update last update time.
+            Settings.Default.LastUpdateCheckTime = DateTime.UtcNow;
+
+            // Schedule next auto-update check.
+            _autoUpdateTime.Stop();
+            if (Settings.Default.UpdateCheckInterval.TotalMilliseconds > 0)
+            {
+                if (Settings.Default.UpdateCheckInterval.TotalDays < 6)
+                    Settings.Default.UpdateCheckInterval = new TimeSpan(6, 0, 0);
+                _autoUpdateTime.Interval = Settings.Default.UpdateCheckInterval;
+                _autoUpdateTime.Stop();
+                _autoUpdateTime.Tick += (e, a) => Update();
+            }
+
+            Settings.Default.Save();
+        }
+
         public void Uninstall()
         {
             MessageBox.Show("Simply delete the portable application directory.");
 
-            if (!_portableEnvironment.Applications.DefaultInstallationDirectory.Exists)
-                _portableEnvironment.Applications.DefaultInstallationDirectory.Create();
-            Process.Start(new ProcessStartInfo("explorer.exe", "/n, /e, " + _portableEnvironment.Applications.DefaultInstallationDirectory));
+            Directory.CreateDirectory(_portableEnvironment.Applications.InstallationBaseDirectory);
+            Process.Start(new ProcessStartInfo("explorer.exe", "/n, /e, " + _portableEnvironment.Applications.InstallationBaseDirectory));
         }
 
         public void Exit()
@@ -83,8 +124,15 @@ namespace PAppsManager.ViewModels
             {
                 if (EnvironmentJson.Exists)
                 {
-                    using (var reader = new StreamReader(EnvironmentJson.OpenRead()))
-                        portableEnvironment = PortableEnvironment.Load(reader);
+                    try
+                    {
+                        using (var reader = new StreamReader(EnvironmentJson.OpenRead()))
+                            portableEnvironment = PortableEnvironment.Load(reader);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Failed to load " + EnvironmentJson + ": " + ex.Message, ex);
+                    }
                 }
 
                 if (portableEnvironment == null)

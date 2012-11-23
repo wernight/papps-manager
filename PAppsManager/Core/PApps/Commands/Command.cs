@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
@@ -32,36 +33,43 @@ namespace PAppsManager.Core.PApps.Commands
         /// <param name="path"></param>
         /// <param name="allowEmpty">True to make it optional, allowing the filename to be null or empty.</param>
         /// <returns>Null if all is fine, or a message if it failed validation.</returns>
-        internal protected static string ValidateRelativePath(string path, bool allowEmpty = false)
+        internal protected static string ValidateRelativePath([NotNull] Expression<Func<string>> pathExpression, bool allowEmpty = false)
         {
+            string path = pathExpression.Compile()();
+            string propertyName = ((MemberExpression) pathExpression.Body).Member.Name;
+
             if (path == null)
-                return "Path cannot be null.";
+                return propertyName + " cannot be null.";
 
             if (!allowEmpty && string.IsNullOrWhiteSpace(path))
-                return "Path cannot be empty.";
+                return propertyName + " cannot be empty.";
 
             var invalidChars = Path.GetInvalidFileNameChars().Where(ch => ch != Path.DirectorySeparatorChar && ch != Path.AltDirectorySeparatorChar).ToArray();
             if (path.IndexOfAny(invalidChars) != -1)
-                return "Path contain invalid characters.";
+                return propertyName + " contain invalid characters.";
 
             if (Path.IsPathRooted(path))
-                return "Path should be relative and cannot be rooted.";
+                return propertyName + " should be relative and cannot be rooted.";
 
             if (!Path.GetFullPath(Path.Combine(@"C:\app", path)).StartsWith(@"C:\app"))
-                return "Path must remain below the application installation folder.";
+                return propertyName + " must remain below the application installation folder.";
 
             return null;
         }
 
-        internal protected static string ValidateRegex(string regex)
+        internal protected static string ValidateWildcard([NotNull] Expression<Func<string>> wildcardExpression)
         {
+            string wildcard = wildcardExpression.Compile()();
+            string propertyName = ((MemberExpression) wildcardExpression.Body).Member.Name;
+
             try
             {
+                var regex = WildcardToRegex(wildcard);
                 new Regex(regex);
             }
             catch (Exception e)
             {
-                return "Invalid files pattern: " + e.Message;
+                return propertyName + " in an invalid files wildcard pattern: " + e.Message;
             }
 
             return null;

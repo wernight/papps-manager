@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -38,6 +39,7 @@ namespace PAppsManager.Core.PApps.Commands
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             // We don't serialize them (as we don't need to and we should get them fresh when installing).
+            serializer.Serialize(writer, null);
         }
 
         [UsedImplicitly]

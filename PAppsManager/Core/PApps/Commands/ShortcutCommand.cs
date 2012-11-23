@@ -11,6 +11,8 @@ namespace PAppsManager.Core.PApps.Commands
         public ShortcutCommand()
         {
             DisplayMode = ShellLink.LinkDisplayMode.edmNormal;
+            WorkingDirectory = "";
+            IconPath = "";
         }
 
         /// <summary>
@@ -56,20 +58,20 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            string validate = ValidateRelativePath(FileName);
+            string validate = ValidateRelativePath(() => FileName);
             if (validate != null)
                 return validate;
-            if (!FileName.EndsWith(".lnt", StringComparison.OrdinalIgnoreCase))
+            if (!FileName.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
                 return "Shortcut name should be a *.lnk file.";
 
             if (string.IsNullOrWhiteSpace(Target))
                 return "Target is not defined.";
 
-            validate = ValidateRelativePath(WorkingDirectory, true);
+            validate = ValidateRelativePath(() => WorkingDirectory, true);
             if (validate != null)
                 return validate;
 
-            validate = ValidateRelativePath(IconPath, true);
+            validate = ValidateRelativePath(() => IconPath, true);
             if (validate != null)
                 return validate;
 
@@ -80,7 +82,7 @@ namespace PAppsManager.Core.PApps.Commands
         {
             var shortcut = new Shortcut
                                {
-                                   FileName = Path.Combine(portableEnvironment.Shortcuts.StartMenuTargetDirectory.FullName, FileName),
+                                   FileName = Path.Combine(portableEnvironment.Shortcuts.StartMenuTargetDirectory, FileName),
                                    Target = Path.Combine(targetDirectory.FullName, Target),
                                    Arguments = Arguments,
                                    WorkingDirectory = string.IsNullOrWhiteSpace(WorkingDirectory) ? null : Path.Combine(targetDirectory.FullName, WorkingDirectory),

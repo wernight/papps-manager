@@ -11,6 +11,7 @@
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem cal:Message.Attach="Install" Header="Add a portable application" />
+                    <MenuItem cal:Message.Attach="Update" Header="Check for updates" />
                     <MenuItem cal:Message.Attach="Uninstall" Header="Remove a portable application" />
                     <Separator />
                     <MenuItem cal:Message.Attach="Exit" Header="Exit" />

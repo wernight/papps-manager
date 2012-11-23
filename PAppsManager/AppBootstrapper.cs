@@ -27,6 +27,7 @@ namespace PAppsManager
         /// <param name="builder">The Autofac configuration builder.</param>
         protected override void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterInstance(new MainWindowViewModel());
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)

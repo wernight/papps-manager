@@ -18,12 +18,12 @@ namespace PAppsManager.Core.PApps
             _environment = environment;
         }
 
-        public DirectoryInfo StartMenuTargetDirectory
+        public string StartMenuTargetDirectory
         {
             get
             {
-                return new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-                                                      Settings.Default.StartMenuDirectoryName));
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
+                                    Settings.Default.StartMenuDirectoryName);
             }
         }
 
@@ -63,12 +63,12 @@ namespace PAppsManager.Core.PApps
                             });
 
             // Look in the start menu.
-            if (StartMenuTargetDirectory.Exists)
-                foreach (FileInfo linkFile in StartMenuTargetDirectory.EnumerateFiles("*.lnk", SearchOption.AllDirectories))
+            if (Directory.Exists(StartMenuTargetDirectory))
+                foreach (string linkFileName in Directory.EnumerateFiles(StartMenuTargetDirectory, "*.lnk", SearchOption.AllDirectories))
                 {
-                    using (var shellLink = new ShellLink(linkFile.FullName))
+                    using (var shellLink = new ShellLink(linkFileName))
                     {
-                        if (shellLink.ShortCutFile.StartsWith(_environment.Applications.BaseDirectory.FullName))
+                        if (shellLink.ShortCutFile.StartsWith(_environment.Applications.InstallationBaseDirectory))
                             yield return makeShortcut(shellLink);
                     }
                 }
@@ -79,7 +79,7 @@ namespace PAppsManager.Core.PApps
             {
                 using (var shellLink = new ShellLink(linkFile.FullName))
                 {
-                    if (shellLink.ShortCutFile.StartsWith(_environment.Applications.BaseDirectory.FullName))
+                    if (shellLink.ShortCutFile.StartsWith(_environment.Applications.InstallationBaseDirectory))
                         yield return makeShortcut(shellLink);
                 }
             }
@@ -132,8 +132,8 @@ namespace PAppsManager.Core.PApps
                 Remove(shortcut);
             }
 
-            if (StartMenuTargetDirectory.Exists)
-                StartMenuTargetDirectory.Delete(true);
+            if (Directory.Exists(StartMenuTargetDirectory))
+                Directory.Delete(StartMenuTargetDirectory, true);
         }
 
         public bool Contains(Shortcut item)
@@ -173,11 +173,17 @@ namespace PAppsManager.Core.PApps
 
         #endregion
 
+        /// <summary>
+        /// Environment variables used to save relative path so that we can portabilize shortcuts accross machines.
+        /// </summary>
+        /// <returns></returns>
         private EnvironmentVariables GetEnvironmentVariables()
         {
+            // Note: We use Path.GetFullPath() also to normalize the path (like always use \ on Windows)
+            // for later string comparison.
             var environmentVariables = new EnvironmentVariables();
-            environmentVariables.Add("PAppsBaseDir", _environment.Applications.BaseDirectory.FullName);
-            environmentVariables.Add("PAppsStartMenuDir", StartMenuTargetDirectory.FullName);
+            environmentVariables.Add("PAppsBaseDir", Path.GetFullPath(_environment.Applications.InstallationBaseDirectory));
+            environmentVariables.Add("PAppsStartMenuDir", Path.GetFullPath(StartMenuTargetDirectory));
             return environmentVariables;
         }
     }

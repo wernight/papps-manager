@@ -12,6 +12,7 @@ namespace PAppsManager.Core.PApps
             Shortcuts = new ShortcutCollection(this);
         }
 
+        [JsonIgnore]
         public PortableApplicationCollection Applications { get; private set; }
 
         public ShortcutCollection Shortcuts { get; private set; }

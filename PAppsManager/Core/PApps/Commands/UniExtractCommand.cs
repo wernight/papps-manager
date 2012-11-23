@@ -31,9 +31,9 @@ namespace PAppsManager.Core.PApps.Commands
             if (!UniExtractExe.Exists)
                 return "UniExtract could not be found in: " + UniExtractExe.FullName;
 
-            return ValidateRelativePath(FileName) ??
+            return ValidateRelativePath(() => FileName) ??
                    ValidateNotEndingByEscape(FileName) ??
-                   ValidateRelativePath(ToDirectory, true) ??
+                   ValidateRelativePath(() => ToDirectory, true) ??
                    ValidateNotEndingByEscape(ToDirectory);
         }
 

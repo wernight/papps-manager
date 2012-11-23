@@ -20,7 +20,11 @@ namespace PAppsManager.Core.PApps.Commands
 
         public virtual string Validate()
         {
-            return this.Select(action => action.Validate()).FirstOrDefault(validate => validate != null);
+            return (from ICommand command in this
+                    let validate = command.Validate()
+                    where validate != null
+                    select string.Format("Command {0} validation failed: {1}", command.GetType().Name, validate)
+                   ).FirstOrDefault();
         }
 
         public virtual void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)

@@ -47,7 +47,7 @@ namespace PAppsManager.Core.PApps.Commands
 
         public override string Validate()
         {
-            return ValidateRelativePath(FromDirectory, true) ?? ValidateRegex(WildcardToRegex(IncludeFiles)) ?? ValidateRelativePath(ToDirectory, true);
+            return ValidateRelativePath(() => FromDirectory, true) ?? ValidateWildcard(() => IncludeFiles) ?? ValidateRelativePath(() => ToDirectory, true);
         }
 
         public override void Execute(DirectoryInfo targetDirectory, PortableEnvironment portableEnvironment)
