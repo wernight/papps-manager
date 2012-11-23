@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,6 +29,10 @@ namespace PAppsManager.Core.PApps
             {
                 foreach (string directory in Directory.GetDirectories(InstallationBaseDirectory))
                 {
+                    // Skip applications back-ups.
+                    if (directory.EndsWith(".bak", true, CultureInfo.InvariantCulture))
+                        continue;
+
                     string infoFileName = Path.Combine(directory, ApplicationInfoFileName);
                     if (File.Exists(infoFileName))
                     {
