@@ -62,9 +62,13 @@ namespace PAppsManager.Core.PApps.Commands
             string wildcard = wildcardExpression.Compile()();
             string propertyName = ((MemberExpression) wildcardExpression.Body).Member.Name;
 
+            return ValidateRegex(WildcardToRegex(wildcard), propertyName);
+        }
+
+        internal static string ValidateRegex([NotNull] string regex, [NotNull] string propertyName)
+        {
             try
             {
-                var regex = WildcardToRegex(wildcard);
                 new Regex(regex);
             }
             catch (Exception e)

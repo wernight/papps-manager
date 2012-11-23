@@ -18,7 +18,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [TestCase(@"^.*/([^\\/]*\.exe$", Result = false)]
         public bool ValidateRegex(string regex)
         {
-            return Command.ValidateRegex(regex) == null;
+            return Command.ValidateRegex(regex, "Regex") == null;
         }
 
         [TestCase(@" ", Result = false)]
@@ -37,7 +37,7 @@ namespace PAppsManagerTests.Core.PApps.Commands
         [TestCase(@"Foo""Bar", Result = false)]
         public bool ValidateRelativePath(string path)
         {
-            return Command.ValidateRelativePath(path) == null;
+            return Command.ValidateRelativePath(() => path) == null;
         }
     }
 }
