@@ -1,11 +1,18 @@
-﻿<Window x:Class="PAppsManager.Views.MainWindowView"
+﻿<Window x:Class="PAppsManager.Views.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tb="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
-        xmlns:cal="http://www.caliburnproject.org" Title="MainWindowView" Height="350" Width="525"
-        Visibility="Hidden">
+        xmlns:cal="http://www.caliburnproject.org"
+        Title="PApps Manager"
+        Height="250" Width="250"
+        SizeToContent="WidthAndHeight"
+        Visibility="Visible">
     <Grid>
-        <tb:TaskbarIcon IconSource="/Resources/Icons/AppIcon.ico" ToolTipText="PApps Manager">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <tb:TaskbarIcon IconSource="/Resources/Icons/AppIcon.ico" ToolTipText="PApps Manager" Grid.ColumnSpan="2">
 
             <!-- Set a simple context menu  -->
             <tb:TaskbarIcon.ContextMenu>
@@ -14,10 +21,14 @@
                     <MenuItem cal:Message.Attach="Update" Header="Check for updates" />
                     <MenuItem cal:Message.Attach="Uninstall" Header="Remove a portable application" />
                     <Separator />
+                    <MenuItem cal:Message.Attach="Migrate" Header="Migrate existing applications" />
+                    <Separator />
                     <MenuItem cal:Message.Attach="Exit" Header="Exit" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
 
         </tb:TaskbarIcon>
+
+        <ContentControl x:Name="ActiveItem" Grid.ColumnSpan="2" />
     </Grid>
 </Window>

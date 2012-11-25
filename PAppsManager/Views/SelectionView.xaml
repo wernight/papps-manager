@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="PAppsManager.Views.SelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:PAppsManager.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:SelectionViewModel, IsDesignTimeCreatable=True}"
+             cal:Bind.AtDesignTime="True">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Control}" x:Key="BaseStyle">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="7" />
+            <Setter Property="Padding" Value="3" />
+        </Style>
+        <Style TargetType="{x:Type Label}" BasedOn="{StaticResource BaseStyle}"></Style>
+        <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource BaseStyle}"></Style>
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseStyle}">
+            <Setter Property="Padding" Value="14,4"></Setter>
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="Background" Value="#7DB542"></Setter>
+            <Setter Property="BorderBrush" Value="#ACDD4A"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel>
+        <Label FontWeight="Bold">
+            <TextBlock>
+                You currently have no application,<LineBreak />
+                what would you like to do?
+            </TextBlock>
+        </Label>
+        <ListBox ItemsSource="{Binding Items}" BorderThickness="0" Padding="5">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <CheckBox Name="CheckBoxZone" IsChecked="{Binding IsChecked}" Margin="0,10">
+                        <TextBlock Text="{Binding Description}" Margin="0,-7,0,0"/>
+                    </CheckBox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="Ok">OK</Button>
+            <Button x:Name="Skip">Skip</Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -1,5 +1,5 @@
 Name "PApps Manager"
-OutFile "PAppsManager-Setup.exe"
+OutFile "papps-manager-setup.exe"
 
 ; The default installation directory
 InstallDir "C:\"

@@ -5,13 +5,14 @@ using Autofac;
 using Caliburn.Micro;
 using Caliburn.Micro.Autofac;
 using PAppsManager.Core;
+using PAppsManager.Core.Import;
 using PAppsManager.Core.SingleInstance;
 using PAppsManager.Properties;
 using PAppsManager.ViewModels;
 
 namespace PAppsManager
 {
-    internal class AppBootstrapper : AutofacBootstrapper<MainWindowViewModel>
+    internal class AppBootstrapper : AutofacBootstrapper<ShellViewModel>
     {
         private SingleInstance _singleInstance;
 
@@ -27,7 +28,7 @@ namespace PAppsManager
         /// <param name="builder">The Autofac configuration builder.</param>
         protected override void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterInstance(new MainWindowViewModel());
+            builder.RegisterInstance(new ShellViewModel());
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
@@ -80,7 +81,7 @@ namespace PAppsManager
                 throw new ArgumentException("Invalid command line arguments.");
             string url = args[1];
 
-            IoC.Get<MainWindowViewModel>().InstallApplication(url);
+            IoC.Get<ShellViewModel>().InstallApplication(url);
         }
 
         protected override void OnExit(object sender, EventArgs e)

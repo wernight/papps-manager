@@ -84,6 +84,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\Import\Importer.cs" />
+    <Compile Include="Core\ISelection.cs" />
+    <Compile Include="Core\Import\LiberKeyImporter.cs" />
+    <Compile Include="Core\Import\PortableAppsImporter.cs" />
     <Compile Include="Core\PApps\PortableApplicationCollection.cs" />
     <Compile Include="Core\PApps\Commands\CommandException.cs" />
     <Compile Include="Core\PApps\Commands\CommandListJsonConverter.cs" />
@@ -112,8 +116,14 @@
     <Compile Include="Core\UrlProtocol.cs" />
     <Compile Include="Core\ShellLink\ShellLink.cs" />
     <Compile Include="Properties\Settings.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Page Include="Views\MainWindowView.xaml">
+    <Compile Include="ViewModels\SelectionViewModel.cs" />
+    <Compile Include="Core\Import\OpenWebsiteImporter.cs" />
+    <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Page Include="Views\SelectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

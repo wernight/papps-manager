@@ -2,25 +2,65 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using Caliburn.Micro;
+using PAppsManager.Core.Import;
 using PAppsManager.Core.PApps;
 using PAppsManager.Properties;
 
 namespace PAppsManager.ViewModels
 {
-    internal class MainWindowViewModel : PropertyChangedBase
+    internal class ShellViewModel : Conductor<object>
     {
         private readonly PortableEnvironment _portableEnvironment;
         private static readonly FileInfo EnvironmentJson = new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Environment.json"));
         private readonly DispatcherTimer _autoUpdateTime = new DispatcherTimer();
 
-        public MainWindowViewModel()
+        public ShellViewModel()
         {
             _portableEnvironment = SetUpPortableEnvironment();
+        }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+            if (_portableEnvironment.Applications.Count == 0)
+                Migrate();
+        }
+
+        public void Migrate()
+        {
+            var importViewModel = new SelectionViewModel(GetImportChoices());
+            importViewModel.Deactivated += (sender, args) => MessageBox.Show("Test " + importViewModel.Items.Where(x => x.IsChecked).Count());
+            ActivateItem(importViewModel);
+
+//            // Perform the import.
+//            foreach (Importer importer in Items)
+//            {
+//                if (importer.IsChecked)
+//                    yield return importer;
+//            }
+
+        }
+
+        private static IEnumerable<Importer> GetImportChoices()
+        {
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                if (!drive.IsReady)
+                    continue;
+
+                if (PortableAppsImporter.CanImport(drive))
+                    yield return new PortableAppsImporter(drive);
+                if (LiberKeyImporter.CanImport(drive))
+                    yield return new LiberKeyImporter(drive);
+            }
+
+            yield return new OpenWebsiteImporter();
         }
 
         public void Install()
@@ -50,9 +90,9 @@ namespace PAppsManager.ViewModels
                 // Confirm installation.
                 string message;
                 if (!_portableEnvironment.Applications.Contains(application))
-                    message = string.Format("Do you want to the add the portable application {0}?", application.Name);
+                    message = String.Format("Do you want to the add the portable application {0}?", application.Name);
                 else
-                    message = string.Format("You already have the portable application {0}." + Environment.NewLine + "Do you want to reinstall it?", application.Name);
+                    message = String.Format("You already have the portable application {0}." + Environment.NewLine + "Do you want to reinstall it?", application.Name);
 
                 if (MessageBox.Show(message, "PApps Manager - Install Application", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
@@ -60,7 +100,7 @@ namespace PAppsManager.ViewModels
                     _portableEnvironment.Applications.Add(application);
 
                     MessageBox.Show(
-                        string.Format("The portable application {0} has been install successfully. You can now use it like a regular application.", application.Name),
+                        String.Format("The portable application {0} has been install successfully. You can now use it like a regular application.", application.Name),
                         "PApps Manager - Install Application");
                 }
             }
@@ -114,7 +154,7 @@ namespace PAppsManager.ViewModels
         public void Exit()
         {
             TearDownPortableEnvironment();
-            App.Current.Shutdown();
+            Application.Current.Shutdown();
         }
 
         private PortableEnvironment SetUpPortableEnvironment()
