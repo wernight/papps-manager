@@ -2,7 +2,7 @@
 {
     internal interface ISelection
     {
-        bool IsChecked { get; set; }
+        bool Enabled { get; set; }
 
         string Description { get; }
     }

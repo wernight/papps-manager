@@ -116,10 +116,12 @@
     <Compile Include="Core\UrlProtocol.cs" />
     <Compile Include="Core\ShellLink\ShellLink.cs" />
     <Compile Include="Properties\Settings.cs" />
-    <Compile Include="ViewModels\SelectionViewModel.cs" />
+    <Compile Include="ViewModels\ImportEvent.cs" />
+    <Compile Include="ViewModels\ProgressViewModel.cs" />
+    <Compile Include="ViewModels\ImportSelectionViewModel.cs" />
     <Compile Include="Core\Import\OpenWebsiteImporter.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Page Include="Views\SelectionView.xaml">
+    <Page Include="Views\ImportSelectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

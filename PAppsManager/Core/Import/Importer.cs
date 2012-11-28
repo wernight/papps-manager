@@ -7,15 +7,13 @@ namespace PAppsManager.Core.Import
     {
         protected Importer(string description)
         {
-            IsChecked = true;
+            Enabled = true;
             Description = description;
         }
 
-        public bool IsChecked { get; set; }
+        public bool Enabled { get; set; }
 
         public string Description { get; private set; }
-
-        public bool Importing { get; protected set; }
 
         public event EventHandler<ResultCompletionEventArgs> Completed = delegate { };
 

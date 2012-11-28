@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PAppsManager.Views.SelectionView"
+﻿<UserControl x:Class="PAppsManager.Views.ImportSelectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:PAppsManager.ViewModels"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=vm:SelectionViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:ImportSelectionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
     <UserControl.Resources>
         <Style TargetType="{x:Type Control}" x:Key="BaseStyle">
@@ -35,7 +35,7 @@
         <ListBox ItemsSource="{Binding Items}" BorderThickness="0" Padding="5">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <CheckBox Name="CheckBoxZone" IsChecked="{Binding IsChecked}" Margin="0,10">
+                    <CheckBox Name="CheckBoxZone" IsChecked="{Binding Enabled}" Margin="0,10">
                         <TextBlock Text="{Binding Description}" Margin="0,-7,0,0"/>
                     </CheckBox>
                 </DataTemplate>

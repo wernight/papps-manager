@@ -14,7 +14,7 @@ using PAppsManager.Properties;
 
 namespace PAppsManager.ViewModels
 {
-    internal class ShellViewModel : Conductor<object>
+    internal class ShellViewModel : Conductor<object>, IHandle<ImportEvent>
     {
         private readonly PortableEnvironment _portableEnvironment;
         private static readonly FileInfo EnvironmentJson = new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Environment.json"));
@@ -34,14 +34,16 @@ namespace PAppsManager.ViewModels
 
         public void Migrate()
         {
-            var importViewModel = new SelectionViewModel(GetImportChoices());
-            importViewModel.Deactivated += (sender, args) => MessageBox.Show("Test " + importViewModel.Items.Where(x => x.IsChecked).Count());
+            IEventAggregator events = new EventAggregator();
+            var importViewModel = new ImportSelectionViewModel(GetImportChoices(), events);
+            events.Subscribe(this);
+            importViewModel.Deactivated += (sender, args) => MessageBox.Show("Test " + importViewModel.Items.Where(x => x.Enabled).Count());
             ActivateItem(importViewModel);
-
+            
 //            // Perform the import.
 //            foreach (Importer importer in Items)
 //            {
-//                if (importer.IsChecked)
+//                if (importer.Enabled)
 //                    yield return importer;
 //            }
 
@@ -226,6 +228,11 @@ namespace PAppsManager.ViewModels
                 MessageBox.Show("WARNING: Failed to clean-up and restore the original configuration (shortcuts, environement, registry...): " + ex.Message, "PApps Manager",
                                 MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+        }
+
+        public void Handle(ImportEvent message)
+        {
+            MessageBox.Show("Youhou!!! " + message.Count);
         }
     }
 }

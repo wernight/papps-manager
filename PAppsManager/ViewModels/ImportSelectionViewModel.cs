@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Caliburn.Micro;
 using PAppsManager.Core;
 using PAppsManager.Core.Import;
@@ -10,8 +11,9 @@ namespace PAppsManager.ViewModels
     /// Displays a list of choices to select from.
     /// The user can select one or more items.
     /// </summary>
-    internal class SelectionViewModel : Screen
+    internal class ImportSelectionViewModel : Screen
     {
+        private readonly IEventAggregator _events;
         public ObservableCollection<ISelection> Items { get; private set; }
 
         /// <summary>
@@ -19,7 +21,7 @@ namespace PAppsManager.ViewModels
         /// </summary>
         public bool Importing { get; private set; }
 
-        public SelectionViewModel()
+        public ImportSelectionViewModel()
         {
             if (Execute.InDesignMode)
             {
@@ -32,15 +34,16 @@ namespace PAppsManager.ViewModels
             }
         }
 
-        public SelectionViewModel(IEnumerable<ISelection> importChoices)
+        public ImportSelectionViewModel(IEnumerable<ISelection> importChoices, IEventAggregator events)
         {
             Items = new ObservableCollection<ISelection>(importChoices);
+            _events = events;
         }
 
         public void Ok()
         {
             // Close this screen.
-            TryClose();
+            _events.Publish(new ImportEvent(Items.Where(i => i.Enabled)));
         }
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace PAppsManager.ViewModels
         public void Skip()
         {
             foreach (Importer importer in Items)
-                importer.IsChecked = false;
+                importer.Enabled = false;
             Ok();
         }
 
@@ -57,11 +60,11 @@ namespace PAppsManager.ViewModels
         {
             public SampleImporter(string description)
             {
-                IsChecked = true;
+                Enabled = true;
                 Description = description;
             }
 
-            public bool IsChecked { get; set; }
+            public bool Enabled { get; set; }
 
             public string Description { get; private set; }
         }
