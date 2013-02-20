@@ -5,21 +5,21 @@ namespace PAppsManager.Core.Import
 {
     internal abstract class Importer : ISelection, IResult
     {
-        protected Importer(string description)
+        protected Importer()
         {
             Enabled = true;
-            Description = description;
         }
 
         public bool Enabled { get; set; }
 
-        public string Description { get; private set; }
+        public abstract string Description { get; }
 
         public event EventHandler<ResultCompletionEventArgs> Completed = delegate { };
 
         public void Execute(ActionExecutionContext context)
         {
             PerformImport();
+
             Completed(this, new ResultCompletionEventArgs());
         }
 

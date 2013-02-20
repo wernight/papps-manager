@@ -96,8 +96,10 @@ namespace PAppsManager.Core.PApps
             if (item == null)
                 throw new ArgumentNullException("item");
             item.Validate();
-            Debug.Assert(item.Dependencies != null);
-            Debug.Assert(item.InstallCommands != null);
+            if (item.Dependencies == null)
+                throw new ArgumentException("No dependencies have been defined.", "item");
+            if (item.InstallCommands == null)
+                throw new ArgumentException("No installation commands have been defined.", "item");
 
             // Get the existing instance it's already installed.
             PortableApplication existingInstance = _applications.FirstOrDefault(x => Equals(x, item));
@@ -156,8 +158,8 @@ namespace PAppsManager.Core.PApps
             {
                 // Perform the installation.
                 if (Directory.Exists(item.InstallDirectory) && !string.IsNullOrWhiteSpace(item.DataDirectory))
-                    // Shouldn't happen but for safety measure...
-                    throw new Exception("Application installation directory shouldn't exist at this point.");
+                    // Application installation directory shouldn't exist at this point.
+                    throw new Exception("Application installation directory already exists: " + item.InstallDirectory);
                 DirectoryInfo targetDirectoryInfo = Directory.CreateDirectory(item.InstallDirectory);
                 item.InstallCommands.Execute(targetDirectoryInfo, _environment);
 

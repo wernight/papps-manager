@@ -35,21 +35,13 @@ namespace PAppsManager.ViewModels
         public void Migrate()
         {
             IEventAggregator events = new EventAggregator();
-            var importViewModel = new ImportSelectionViewModel(GetImportChoices(), events);
+            var importViewModel = new ImportSelectionViewModel(GetImportChoices());
             events.Subscribe(this);
-            importViewModel.Deactivated += (sender, args) => MessageBox.Show("Test " + importViewModel.Items.Where(x => x.Enabled).Count());
+            importViewModel.Deactivated += (sender, args) => MessageBox.Show("Test " + importViewModel.Items.Count(x => x.Enabled));
             ActivateItem(importViewModel);
-            
-//            // Perform the import.
-//            foreach (Importer importer in Items)
-//            {
-//                if (importer.Enabled)
-//                    yield return importer;
-//            }
-
         }
 
-        private static IEnumerable<Importer> GetImportChoices()
+        private IEnumerable<Importer> GetImportChoices()
         {
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
@@ -57,9 +49,10 @@ namespace PAppsManager.ViewModels
                     continue;
 
                 if (PortableAppsImporter.CanImport(drive))
-                    yield return new PortableAppsImporter(drive);
+                    yield return new PortableAppsImporter(drive, _portableEnvironment);
                 if (LiberKeyImporter.CanImport(drive))
-                    yield return new LiberKeyImporter(drive);
+                    using (var webClient = new WebClient())
+                        yield return new LiberKeyImporter(drive, _portableEnvironment, webClient.DownloadString);
             }
 
             yield return new OpenWebsiteImporter();
@@ -67,7 +60,7 @@ namespace PAppsManager.ViewModels
 
         public void Install()
         {
-            Process.Start("http://compareason.com");
+            Process.Start(Resources.LibraryWebsiteBaseUrl);
         }
 
         public void InstallApplication(string url)
@@ -120,7 +113,7 @@ namespace PAppsManager.ViewModels
                 return;
 
             // Retrieve a list of updates available.
-            IEnumerable<PortableApplication> updates = _portableEnvironment.Applications.Updates("http://compareason.com/update");
+            IEnumerable<PortableApplication> updates = _portableEnvironment.Applications.Updates(Resources.LibraryWebsiteBaseUrl + "/update");
 
             // Upgrade them all.
             foreach (PortableApplication application in updates)
@@ -186,7 +179,7 @@ namespace PAppsManager.ViewModels
                 portableEnvironment.Shortcuts.Add(new Shortcut
                 {
                     FileName = @"%PAppsStartMenuDir%\Find more applications.lnk",
-                    Target = "http://compareason.com/",
+                    Target = Resources.LibraryWebsiteBaseUrl,
                     IconPath = Assembly.GetExecutingAssembly().Location,
                     Description = "Find more applications",
                 });

@@ -4,9 +4,9 @@ namespace PAppsManager.Core.Import
 {
     internal class OpenWebsiteImporter : Importer
     {
-        public OpenWebsiteImporter()
-            : base("Discover applications on CompaReason.com")
+        public override string Description
         {
+            get { return "Discover applications on CompaReason.com"; }
         }
 
         protected override void PerformImport()

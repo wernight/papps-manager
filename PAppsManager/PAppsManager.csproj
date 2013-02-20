@@ -84,6 +84,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\Import\CopyCommand.cs" />
     <Compile Include="Core\Import\Importer.cs" />
     <Compile Include="Core\ISelection.cs" />
     <Compile Include="Core\Import\LiberKeyImporter.cs" />

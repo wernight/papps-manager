@@ -123,4 +123,7 @@
   <data name="InvalidCommandLine" xml:space="preserve">
     <value>Invalid command line arguments provided to {0}.</value>
   </data>
+  <data name="LibraryWebsiteBaseUrl" xml:space="preserve">
+    <value>http://compareason.com</value>
+  </data>
 </root>

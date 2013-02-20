@@ -10,7 +10,7 @@ namespace PAppsManager.Core.PApps
     internal class PortableApplication
     {
         /// <summary>
-        /// 
+        /// Describes a portable application.
         /// </summary>
         /// <param name="url">URL of the applicatin.</param>
         /// <param name="webClient">A function that returns the JSON string downloaded from a given URL.</param>
@@ -57,6 +57,7 @@ namespace PAppsManager.Core.PApps
 
         /// <summary>
         /// Unique URL identifying this application.
+        /// Can be null if the application has been manually installed for example.
         /// </summary>
         [CanBeNull, JsonProperty("url")]
         public string Url { get; set; }
